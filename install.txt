@@ -197,13 +197,24 @@ https://github.com/openshift/origin/blob/master/examples/jenkins/README.md
 
 
 ######################################################################
+Jenkins
+https://github.com/openshift/origin/blob/master/examples/jenkins/README.md
+
 ln -s /SOURCE/openshift-origin-server/oadm /usr/sbin/
 oadm policy add-scc-to-group anyuid system:authenticated
 oc new-app  sameersbn/redis
 oc new-app --template=postgresql-persistent -p POSTGRESQL_USER='admin' -p POSTGRESQL_PASSWORD='redhat' -p POSTGRESQL_DATABASE='gitlab'
 
+
+# Create database, user dan set admin sebagai Superuser
+psql template1
+CREATE USER admin WITH PASSWORD 'redhat';
+CREATE DATABASE gitlab;
+GRANT ALL PRIVILEGES ON DATABASE gitlab to admin;
+ALTER USER admin WITH SUPERUSER;
+
+
 oc new-app sameersbn/gitlab --name=gitlab-ce -e 'GITLAB_HOST=http://gitlab-devops.router.default.svc.cluster.local' -e 'DB_TYPE=postgres' -e 'DB_HOST=172.30.107.188' -e 'DB_PORT=5432' -e 'DB_NAME=gitlab' -e 'DB_USER=admin' -e 'DB_PASS=redhat'   -e 'REDIS_HOST=172.30.171.135' -e 'REDIS_PORT=6379' -e 'GITLAB_SECRETS_DB_KEY_BASE=fRW8HBMgNG3k2HsKnzjtlq3lz2VQHgDKKfRTfsBZpZLMcPFhxknLhQbssgQ3X79P' -e 'SMTP_ENABLED=true' -e 'SMTP_HOST=139.59.99.66' -e 'SMTP_PORT=25' -e 'GITLAB_EMAIL=no-reply@i-3.co.id' -e 'GITLAB_SECRETS_SECRET_KEY_BASE=6lvFt6JFgTKWxG68cZs9376MN8sgTVfBn69ckKRxcPFg3PQDPV4stqk3VpL9gZmg'  -e GITLAB_SECRETS_OTP_KEY_BASE='dhFHRgPchrh345xnmSV7J26Vw9x88GrM7FBDH5NmWRhpNBjR69HWLwJphJQz4fll'
 
-oc volumes dc/gitlab-ce --add --claim-name=gitlab-log --mount-path=/var/log/gitlab                      -t persistentVolumeClaim --overwrite
-oc volumes dc/gitlab-ce --add --claim-name=gitlab-data --mount-path=/home/git/data                      -t persistentVolumeClaim --overwrite
-
+oc volumes dc/gitlab-ce --add --claim-name=gitlab-log --mount-path=/var/log/gitlab -t persistentVolumeClaim --overwrite
+oc volumes dc/gitlab-ce --add --claim-name=gitlab-data --mount-path=/home/git/data -t persistentVolumeClaim --overwrite
