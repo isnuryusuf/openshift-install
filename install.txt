@@ -178,4 +178,14 @@ spec:
 __EOF__
 
 oc create -f pv.yml
+ecoh "ulangin pada pv0002, pv0003, dst"
+
+# Setting up a volume group and LVM thin pool on user specified block device
+echo DEVS=/dev/sda >> /etc/sysconfig/docker-storage-setup
+echo VG=docker-vg >> /etc/sysconfig/docker-storage-setup
+docker-storage-setup
+pvs
+vgs
+lvs
+systemctl restart docker
 
