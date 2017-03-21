@@ -4,15 +4,16 @@ yum check-update
 yum -y install     https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo
 yum -y --enablerepo=epel install ansible pyOpenSSL
-yum install docker wget git net-tools bind-utils iptables-services bridge-utils bash-completion
+yum install docker wget git net-tools bind-utils iptables-services bridge-utils bash-completion 
 systemctl enable docker
---insecure-registry 172.30.0.0/16 /etc/sysconfig/docker
+echo ' add --insecure-registry 172.30.0.0/16 to /etc/sysconfig/docker'
 
 reboot
-
 # Install portainer
 docker run -d -p 9000:9000  -v "/var/run/docker.sock:/var/run/docker.sock" portainer/portainer
 
+
+######################################################################
 # Download openshift versi 1.5
 mkdir /SOURCE
 cd /SOURCE
@@ -88,8 +89,7 @@ systemctl enable openshift-origin
 systemctl start openshift-origin
 
 
-###################################
-
+######################################################################
 oc login -u system:admin -n default
 
 # to create an admin user for management
@@ -111,8 +111,7 @@ oadm router router --replicas=1 --service-account=router
 # Cek status router
 oc status
 
-###################################
-
+######################################################################
 # Install Install the default image-streams
 cd /SOURCE
 git clone https://github.com/openshift/openshift-ansible.git
@@ -121,10 +120,11 @@ for f in image-streams/image-streams-centos7.json; do cat $f | oc create -n open
 for f in db-templates/*.json; do cat $f | oc create -n openshift -f -; done
 for f in quickstart-templates/*.json; do cat $f | oc create -n openshift -f -; done
 
+# Install Tomcat dan JBOSS EAP Image
 cd examples/latest/
-or f in jws30-tomcat7-mysql-persistent-s2i.json jws30-tomcat7-postgresql-persistent-s2i.json jws30-tomcat8-mysql-persistent-s2i.json jws30-tomcat8-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
+for f in jws30-tomcat7-mysql-persistent-s2i.json jws30-tomcat7-postgresql-persistent-s2i.json jws30-tomcat8-mysql-persistent-s2i.json jws30-tomcat8-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
 
 for f in jws30-tomcat7-mysql-persistent-s2i.json jws30-tomcat7-postgresql-persistent-s2i.json jws30-tomcat8-mysql-persistent-s2i.json jws30-tomcat8-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
-  103  for f in eap64-mysql-persistent-s2i.json eap64-postgresql-persistent-s2i.json eap70-mysql-persistent-s2i.json eap70-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
 
+for f in eap64-mysql-persistent-s2i.json eap64-postgresql-persistent-s2i.json eap70-mysql-persistent-s2i.json eap70-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
 
