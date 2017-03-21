@@ -128,3 +128,30 @@ for f in jws30-tomcat7-mysql-persistent-s2i.json jws30-tomcat7-postgresql-persis
 
 for f in eap64-mysql-persistent-s2i.json eap64-postgresql-persistent-s2i.json eap70-mysql-persistent-s2i.json eap70-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
 
+
+######################################################################
+yum install nfs-utils -y
+mkdir -p /home/data/pv0001 /home/data/pv0002 /home/data/pv0003 /home/data/pv0004 /home/data/pv0005 /home/data/pv0006 /home/data/pv0007 /home/data/pv0008 /home/data/pv0009 /home/data/pv0010 /home/data/pv0011 /home/data/pv0012 /home/data/pv0013 /home/data/pv0014 /home/data/pv0015
+
+chmod 777 /home/data/ -R
+
+cat > /etc/exports << '__EOF__'
+/home/data/pv0001 *(rw,sync,no_root_squash)
+/home/data/pv0002 *(rw,sync,no_root_squash)
+/home/data/pv0003 *(rw,sync,no_root_squash)
+/home/data/pv0004 *(rw,sync,no_root_squash)
+/home/data/pv0005 *(rw,sync,no_root_squash)
+/home/data/pv0006 *(rw,sync,no_root_squash)
+/home/data/pv0007 *(rw,sync,no_root_squash)
+/home/data/pv0008 *(rw,sync,no_root_squash)
+/home/data/pv0009 *(rw,sync,no_root_squash)
+/home/data/pv0010 *(rw,sync,no_root_squash)
+/home/data/pv0011 *(rw,sync,no_root_squash)
+/home/data/pv0012 *(rw,sync,no_root_squash)
+/home/data/pv0013 *(rw,sync,no_root_squash)
+/home/data/pv0014 *(rw,sync,no_root_squash)
+/home/data/pv0015 *(rw,sync,no_root_squash)
+__EOF__
+
+systemctl start nfs
+exportfs -r
