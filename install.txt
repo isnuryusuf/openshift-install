@@ -1,0 +1,130 @@
+
+# Preparation
+yum check-update
+yum -y install     https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo
+yum -y --enablerepo=epel install ansible pyOpenSSL
+yum install docker wget git net-tools bind-utils iptables-services bridge-utils bash-completion
+systemctl enable docker
+--insecure-registry 172.30.0.0/16 /etc/sysconfig/docker
+
+reboot
+
+# Install portainer
+docker run -d -p 9000:9000  -v "/var/run/docker.sock:/var/run/docker.sock" portainer/portainer
+
+# Download openshift versi 1.5
+mkdir /SOURCE
+cd /SOURCE
+wget https://github.com/openshift/origin/releases/download/v1.5.0-rc.0/openshift-origin-server-v1.5.0-rc.0-49a4a7a-linux-64bit.tar.gz
+wget https://github.com/openshift/origin/releases/download/v1.5.0-rc.0/openshift-origin-client-tools-v1.5.0-rc.0-49a4a7a-linux-64bit.tar.gz
+tar xvzf openshift-origin-client-tools-v1.5.0-rc.0-49a4a7a-linux-64bit.tar.gz
+tar xvzf openshift-origin-server-v1.5.0-rc.0-49a4a7a-linux-64bit.tar.gz
+ln -s /SOURCE/openshift-origin-server-v1.5.0-rc.0-49a4a7a-linux-64bit /SOURCE/openshift-origin-server
+ln -s /SOURCE/openshift-origin-client-tools-v1.5.0-rc.0-49a4a7a-linux-64bit /SOURCE/openshift-origin-client-tools
+ln -s /SOURCE/openshift-origin-client-tools/oc /usr/sbin/
+ln -s /SOURCE/openshift-origin-server/openshift /usr/sbin/
+#oc cluster up
+
+
+cat > /etc/profile.d/openshift.sh << '__EOF__'
+export OPENSHIFT=/SOURCE/openshift-origin-server
+export OPENSHIFT_VERSION=v1.5.0
+export PATH=$OPENSHIFT:$PATH
+export KUBECONFIG=$OPENSHIFT/openshift.local.config/master/admin.kubeconfig
+export CURL_CA_BUNDLE=$OPENSHIFT/openshift.local.config/master/ca.crt
+__EOF__
+
+
+chmod 755 /etc/profile.d/openshift.sh
+. /etc/profile.d/openshift.sh
+
+# optional: pre-fetch required docker images
+docker pull openshift/origin-pod:$OPENSHIFT_VERSION
+docker pull openshift/origin-sti-builder:$OPENSHIFT_VERSION
+docker pull openshift/origin-docker-builder:$OPENSHIFT_VERSION
+docker pull openshift/origin-deployer:$OPENSHIFT_VERSION
+docker pull openshift/origin-docker-registry:$OPENSHIFT_VERSION
+docker pull openshift/origin-haproxy-router:$OPENSHIFT_VERSION
+
+
+./openshift start --write-config=openshift.local.config
+chmod +r $OPENSHIFT/openshift.local.config/master/admin.kubeconfig
+chmod +r $OPENSHIFT/openshift.local.config/master/openshift-registry.kubeconfig
+chmod +r $OPENSHIFT/openshift.local.config/master/openshift-router.kubeconfig
+
+
+sed -i 's/router.default.svc.cluster.local/openshift.yusufhadiwinata.cloud/' \
+  $OPENSHIFT/openshift.local.config/master/master-config.yaml
+
+
+firewall-cmd --permanent --zone=public --add-port=80/tcp
+firewall-cmd --permanent --zone=public --add-port=443/tcp
+firewall-cmd --permanent --zone=public --add-port=8443/tcp
+firewall-cmd --reload
+
+
+#nohup ./openshift start &
+
+
+cat > /etc/systemd/system/openshift-origin.service << '__EOF__'
+[Unit]
+Description=Origin Master Service
+After=docker.service
+Requires=docker.service
+ 
+[Service]
+Restart=always
+RestartSec=10s
+ExecStart=/SOURCE/openshift-origin-server/openshift start
+WorkingDirectory=/SOURCE/openshift-origin-server
+ 
+[Install]
+WantedBy=multi-user.target
+__EOF__
+
+systemctl daemon-reload
+systemctl enable openshift-origin
+systemctl start openshift-origin
+
+
+###################################
+
+oc login -u system:admin -n default
+
+# to create an admin user for management
+oadm policy add-cluster-role-to-user cluster-admin admin
+
+# Install the integrated registry
+mkdir /SOURCE/openshift-registry
+#chcon -Rt svirt_sandbox_file_t /SOURCE/openshift-registry
+chown 1001.root /SOURCE/openshift-registry
+oadm policy add-scc-to-user privileged -z registry 
+oadm registry --service-account=registry --mount-host=/SOURCE/openshift-registry
+
+# Verify registry terinstall
+oc get svc docker-registry
+
+# Install router
+oadm policy add-scc-to-user hostnetwork -z router
+oadm router router --replicas=1 --service-account=router
+# Cek status router
+oc status
+
+###################################
+
+# Install Install the default image-streams
+cd /SOURCE
+git clone https://github.com/openshift/openshift-ansible.git
+cd openshift-ansible/roles/openshift_examples/files/examples/latest/
+for f in image-streams/image-streams-centos7.json; do cat $f | oc create -n openshift -f -; done
+for f in db-templates/*.json; do cat $f | oc create -n openshift -f -; done
+for f in quickstart-templates/*.json; do cat $f | oc create -n openshift -f -; done
+
+cd examples/latest/
+or f in jws30-tomcat7-mysql-persistent-s2i.json jws30-tomcat7-postgresql-persistent-s2i.json jws30-tomcat8-mysql-persistent-s2i.json jws30-tomcat8-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
+
+for f in jws30-tomcat7-mysql-persistent-s2i.json jws30-tomcat7-postgresql-persistent-s2i.json jws30-tomcat8-mysql-persistent-s2i.json jws30-tomcat8-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
+  103  for f in eap64-mysql-persistent-s2i.json eap64-postgresql-persistent-s2i.json eap70-mysql-persistent-s2i.json eap70-postgresql-persistent-s2i.json ; do cat $f | oc create -n openshift -f -; done
+
+
