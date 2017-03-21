@@ -155,3 +155,27 @@ __EOF__
 
 systemctl start nfs
 exportfs -r
+showmount -e localhost
+oc get pv
+
+mkdir /SOURCE/persisten-volume-claim
+cd /SOURCE/persisten-volume-claim
+
+cat > /SOURCE/persisten-volume-claim/pv.yml << '__EOF__'
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0001
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  nfs:
+    path: /home/data/pv0001
+    server: localhost
+  persistentVolumeReclaimPolicy: Recycle
+__EOF__
+
+oc create -f pv.yml
+
