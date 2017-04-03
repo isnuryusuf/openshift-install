@@ -1,13 +1,14 @@
 # Pre-Setup
+========================
 
 Note1: This is setup for any of the quickstarts
 
-Install needed packages
-- yum install centos-release-openshift-origin
-- yum install wget git net-tools bind-utils iptables-services bridge-utils bash-completion origin-clients 
+- Install needed packages
+  - yum install centos-release-openshift-origin
+  - yum install wget git net-tools bind-utils iptables-services bridge-utils bash-completion origin-clients 
 
-Install and setup docker
-- yum install docker
+-Install and setup docker
+  - yum install docker
 
 #edit /etc/sysconfig/docker file and add --insecure-registry 172.30.0.0/16 to the OPTIONS parameter.
 sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16"' \
