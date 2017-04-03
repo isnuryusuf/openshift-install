@@ -252,8 +252,8 @@ Shutdown Cluster
 oc cluster down
 ```
 - Configuration location
-    --master-config=`/var/lib/origin/openshift.local.config/master/master-config.yaml`
-    --node-config=`/var/lib/origin/openshift.local.config/node-139.xxx.xxx.xxx/node-config.yaml`
+    - --master-config=`/var/lib/origin/openshift.local.config/master/master-config.yaml`
+    - --node-config=`/var/lib/origin/openshift.local.config/node-139.xxx.xxx.xxx/node-config.yaml`
 
 Line 204 edit:
 ```
