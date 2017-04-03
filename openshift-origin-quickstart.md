@@ -147,11 +147,31 @@ Username: test
 Password: test
 oc new-project test
 oc new-app openshift/deployment-example
+--> Found Docker image 1c839d8 (20 months old) from Docker Hub for "openshift/deployment-example"
+
+    * An image stream will be created as "deployment-example:latest" that will track this image
+    * This image will be deployed in deployment config "deployment-example"
+    * Port 8080/tcp will be load balanced by service "deployment-example"
+      * Other containers can access this service through the hostname "deployment-example"
+    * WARNING: Image "openshift/deployment-example" runs as the 'root' user which may not be permitted by your cluster administrator
+
+--> Creating resources ...
+    imagestream "deployment-example" created
+    deploymentconfig "deployment-example" created
+    service "deployment-example" created
+--> Success
+    Run 'oc status' to view your app.
+```
+
+```
 oc status
 curl 172.30.126.164:8080 # (example v1) (Use URL that it gives you for svc/deployment-example)
 oc tag deployment-example:v2 deployment-example:latest
 curl 172.30.126.164:8080 # (example2 v2)
 ```
+
+
+
 
 Quick Test 2
 ----
