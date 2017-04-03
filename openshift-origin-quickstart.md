@@ -77,8 +77,6 @@ prerequisites - https://docs.openshift.com/enterprise/3.2/install_config/install
 # Testing
 ---
 
-Generic OpenShift Origin Documentation
-----
 
 Quick Test 1
 ----
