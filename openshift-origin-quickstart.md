@@ -228,6 +228,27 @@ curl 172.30.126.164:8080 # (RIGHT PLACE??)
 # Basic Configuration
 ---
 
+Login as system:admin
+----
+```
+oc login -u system:admin -n default
+
+In project default on server https://139.59.243.79:8443
+
+svc/docker-registry - 172.30.248.225:5000
+  dc/docker-registry deploys docker.io/openshift/origin-docker-registry:v1.4.1 
+    deployment #1 deployed 35 minutes ago - 1 pod
+
+svc/kubernetes - 172.30.0.1 ports 443, 53->8053, 53->8053
+
+svc/router - 172.30.4.117 ports 80, 443, 1936
+  dc/router deploys docker.io/openshift/origin-haproxy-router:v1.4.1 
+    deployment #1 deployed 35 minutes ago - 1 pod
+
+View details with 'oc describe <resource>/<name>' or list everything with 'oc get all'
+```
+
+
 
 OpenShift "oc cluster up" Wrapper script
 ----
@@ -255,7 +276,7 @@ oc cluster down
 - Configuration location
     - --master-config=`/var/lib/origin/openshift.local.config/master/master-config.yaml`
     - --node-config=`/var/lib/origin/openshift.local.config/node-139.xxx.xxx.xxx/node-config.yaml`
-    - --host-data-dir=/root/cluster1 (you free to specify)
+    - --host-data-dir=`/root/cluster1` (you free to specify)
 
 Edit `/var/lib/origin/openshift.local.config/master/master-config.yaml` Line 204 and change:
 ```
