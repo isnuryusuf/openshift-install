@@ -221,4 +221,8 @@ curl 172.30.126.164:8080 # (RIGHT PLACE??)
 
 ### Screenshots
 ![login page](https://raw.githubusercontent.com/isnuryusuf/openshift-install/master/image1.png?raw=true)
+![deploy1](https://github.com/isnuryusuf/openshift-install/blob/master/image2.png?raw=true)
+![deploy2](https://github.com/isnuryusuf/openshift-install/blob/master/image3.png?raw=true)
+
+
 
