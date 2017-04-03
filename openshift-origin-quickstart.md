@@ -344,10 +344,15 @@ First install dependency and create user database
 ```
 yum install httpd-tools -y
 
-htpasswd -c /root/cluster1/users.htpasswd yusuf
+htpasswd -c /var/lib/origin/openshift.local.config/master/users.htpasswd yusuf
 New password: 
 Re-type new password: 
 Adding password for user yusuf
+
+htpasswd -m /var/lib/origin/openshift.local.config/master/users.htpasswd admin
+New password: 
+Re-type new password: 
+Adding password for user admin
 
 ```
 
@@ -375,6 +380,12 @@ After change we must restart openshift
 ```
 oc cluster down
 oc cluster up --host-data-dir=/root/cluster1 --public-hostname=demo.i3-cloud.com --routing-suffix=demo.i3-cloud.com --use-existing-config
+```
+
+Adding user yusuf as cluster-admin
+```
+oc login -u system:admin -n default
+oadm policy add-cluster-role-to-user cluster-admin
 ```
 
 
