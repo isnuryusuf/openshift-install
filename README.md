@@ -15,3 +15,12 @@ Lab Requirment
 openshift-origin-quickstart.md =  Quick all-in-one install
 openshift-origin-from-source.txt = Installing from Souce / Latest Release
 ```
+
+
+Lab and Demo Schedule
+---
+- Openshift Installation
+- Docker Orchestration using Openshift
+- Auto-Scaling using Openshift
+- Source to Image deployment
+- Pipeline for CI/CD
