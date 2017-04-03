@@ -24,7 +24,9 @@ Note1: This is setup for any of the quickstarts
   systemctl start docker
 ```
 
+---
 # Setup
+---
 
 Pick One, don't do all four
 
@@ -71,7 +73,9 @@ answer questions as it steps you through an installation
 prerequisites - https://docs.openshift.com/enterprise/3.2/install_config/install/prerequisites.html
 ```
 
+---
 # Testing
+---
 
 Generic OpenShift Origin Documentation
 ----
