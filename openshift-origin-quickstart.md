@@ -12,6 +12,7 @@ ip-address  domain-name.tld
 - Setting hostname at server:
 ```
 hostnamectl set-hostname domain-name.tld
+hostname
 ```
 
 
