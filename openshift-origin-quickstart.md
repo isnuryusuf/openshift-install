@@ -182,8 +182,27 @@ curl 172.30.126.164:8080 # (example v1) (Use URL that it gives you for svc/deplo
 oc tag deployment-example:v2 deployment-example:latest
 curl 172.30.126.164:8080 # (example2 v2)
 ```
-
-
+Output Test app:
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Deployment Demonstration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    HTML{height:100%;}
+    BODY{font-family:Helvetica,Arial;display:flex;display:-webkit-flex;align-items:center;justify-content:center;-webkit-align-items:center;-webkit-box-align:center;-webkit-justify-content:center;height:100%;}
+    .box{background:#006e9c;color:white;text-align:center;border-radius:10px;display:inline-block;}
+    H1{font-size:10em;line-height:1.5em;margin:0 0.5em;}
+    H2{margin-top:0;}
+  </style>
+</head>
+<body>
+<div class="box"><h1>v1</h1><h2></h2></div>
+</body>
+</html>
+```
 
 
 Quick Test 2
