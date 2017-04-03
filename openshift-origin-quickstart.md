@@ -108,5 +108,5 @@ curl 172.30.126.164:8080 # (RIGHT PLACE??)
 
 
 ### Screenshots
-![login page](https://github.com/ngoduykhanh/PowerDNS-Admin/wiki/images/readme_screenshots/fullscreen-login.png?raw=true)
+![login page](https://raw.githubusercontent.com/isnuryusuf/openshift-install/master/image1.png?raw=true)
 
