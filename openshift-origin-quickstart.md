@@ -358,6 +358,10 @@ Adding password for user admin
 
 Edit file `/var/lib/origin/openshift.local.config/master/master-config.yaml` and find:
 ```
+  identityProviders:
+  - challenge: true
+    login: true
+    mappingMethod: claim
     name: anypassword
     provider:
       apiVersion: v1
@@ -384,8 +388,9 @@ oc cluster up --host-data-dir=/root/cluster1 --public-hostname=demo.i3-cloud.com
 
 Adding user yusuf as cluster-admin
 ```
+yum -y install origin
 oc login -u system:admin -n default
-oadm policy add-cluster-role-to-user cluster-admin
+oadm policy add-cluster-role-to-user cluster-admin yusuf
 ```
 
 
