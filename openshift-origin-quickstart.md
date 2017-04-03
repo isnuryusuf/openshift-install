@@ -46,6 +46,8 @@ Pick One, don't do all four
 OC CLUSTER
 ----
 
+The oc cluster up command starts a local OpenShift all-in-one cluster with a configured registry, router, image streams, and default templates. By default, the command requires a working Docker connection
+
 Note1: This section is still being worked on.
 ```
 yum install centos-release-openshift-origin
@@ -218,9 +220,29 @@ oc status
 curl 172.30.126.164:8080 # (RIGHT PLACE??)
 ```
 
+
+
+
+
 ---
 # Basic Configuration
 ---
+
+
+OpenShift "oc cluster up" Wrapper script
+----
+
+This script provides the following enhancements:
+- cluster profiles
+  - cluster management lifecycle
+  - convenience methods for working with persistent volumes
+  - convenience methods for adding common software to your cluster (This will be rewritten to be a plugin like mechanism)
+```
+git clone https://github.com/openshift-evangelists/oc-cluster-wrapper
+echo 'PATH=$HOME/oc-cluster-wrapper:$PATH' >> $HOME/.bash_profile
+echo 'export PATH' >> $HOME/.bash_profile
+```
+
 
 Change apps deployment domain name
 ----
@@ -248,8 +270,10 @@ Start cluster:
 oc cluster up
 ```
 
+---
+# Screenshots
+---
 
-### Screenshots
 ![login page](https://raw.githubusercontent.com/isnuryusuf/openshift-install/master/image1.png?raw=true)
 ![deploy1](https://github.com/isnuryusuf/openshift-install/blob/master/image2.png?raw=true)
 ![deploy2](https://github.com/isnuryusuf/openshift-install/blob/master/image3.png?raw=true)
