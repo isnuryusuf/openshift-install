@@ -70,8 +70,8 @@ yum --enablerepo=centos-openshift-origin-testing clean all
 yum --enablerepo=centos-openshift-origin-testing install atomic-openshift-utils
 atomic-openshift-installer install
 ```
-answer questions as it steps you through an installation
-prerequisites - https://docs.openshift.com/enterprise/3.2/install_config/install/prerequisites.html
+  - answer questions as it steps you through an installation
+  - prerequisites - https://docs.openshift.com/enterprise/3.2/install_config/install/prerequisites.html
 
 ---
 # Testing
