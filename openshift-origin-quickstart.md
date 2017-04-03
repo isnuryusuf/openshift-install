@@ -19,6 +19,7 @@ systemctl start docker
 Setup
 
 Pick One, don't do all four
+----
 
 OC CLUSTER
 Note1: This section is still being worked on.
