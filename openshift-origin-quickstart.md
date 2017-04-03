@@ -102,3 +102,8 @@ oc new-app openshift/nodejs-010-centos7~https://github.com/openshift/nodejs-ex.g
 oc status
 curl 172.30.126.164:8080 # (RIGHT PLACE??)
 ```
+
+
+### Screenshots
+![login page](https://github.com/ngoduykhanh/PowerDNS-Admin/wiki/images/readme_screenshots/fullscreen-login.png?raw=true)
+
