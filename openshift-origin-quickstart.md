@@ -324,7 +324,9 @@ Expose Application to public
 ```
 oc expose service deployment-example
 route "deployment-example" exposed
+```
 
+```
 oc get svc
 NAME                 CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
 deployment-example   172.30.198.162   <none>        8080/TCP   8m
@@ -333,6 +335,48 @@ NAME                 HOST/PORT                                            PATH  
 deployment-example   deployment-example-test-project2.demo.i3-cloud.com             deployment-example   8080-tcp   
 
 ```
+
+Change PasswordIdentityProvider from anypassword to httpasswd 
+----
+By default Openshift running anypassword for PasswordIdentityProvider, to secure openshift login we must change to non-anypassowrd identityprovider, like httpasswd
+
+First install dependency and create user database
+```
+yum install httpd-tools -y
+
+htpasswd -c /root/cluster1/users.htpasswd yusuf
+New password: 
+Re-type new password: 
+Adding password for user yusuf
+
+```
+
+Edit file `/var/lib/origin/openshift.local.config/master/master-config.yaml` and find:
+```
+    name: anypassword
+    provider:
+      apiVersion: v1
+      kind: AllowAllPasswordIdentityProvider
+```
+
+Change to:
+```
+  identityProviders:
+  - name: my_htpasswd_provider 
+    challenge: true 
+    login: true 
+    provider:
+      apiVersion: v1
+      kind: HTPasswdPasswordIdentityProvider
+      file: /root/cluster1/users.htpasswd
+```
+
+After change we must restart openshift
+```
+oc cluster down
+oc cluster up --host-data-dir=/root/cluster1 --public-hostname=demo.i3-cloud.com --routing-suffix=demo.i3-cloud.com --use-existing-config
+```
+
 
 ---
 # Screenshots
