@@ -163,8 +163,21 @@ oc new-app openshift/deployment-example
     Run 'oc status' to view your app.
 ```
 
+Cek Deployment status:
 ```
 oc status
+
+In project test on server https://139.59.243.79:8443
+
+svc/deployment-example - 172.30.235.55:8080
+  dc/deployment-example deploys istag/deployment-example:latest 
+    deployment #1 deployed about a minute ago - 1 pod
+
+2 warnings identified, use 'oc status -v' to see details.
+```
+
+Test app:
+```
 curl 172.30.126.164:8080 # (example v1) (Use URL that it gives you for svc/deployment-example)
 oc tag deployment-example:v2 deployment-example:latest
 curl 172.30.126.164:8080 # (example2 v2)
