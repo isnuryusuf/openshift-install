@@ -241,10 +241,11 @@ This script provides the following enhancements:
 git clone https://github.com/openshift-evangelists/oc-cluster-wrapper
 echo 'PATH=$HOME/oc-cluster-wrapper:$PATH' >> $HOME/.bash_profile
 echo 'export PATH' >> $HOME/.bash_profile
+source .bash_profile
 ```
 
 
-Change apps deployment domain name
+Change apps deployment domain name and persistent cluster data
 ----
 
 Shutdown Cluster
@@ -254,8 +255,9 @@ oc cluster down
 - Configuration location
     - --master-config=`/var/lib/origin/openshift.local.config/master/master-config.yaml`
     - --node-config=`/var/lib/origin/openshift.local.config/node-139.xxx.xxx.xxx/node-config.yaml`
+    - --host-data-dir=/root/cluster1 (you free to specify)
 
-Line 204 edit:
+Edit `/var/lib/origin/openshift.local.config/master/master-config.yaml` Line 204 and change:
 ```
 routingConfig:
   subdomain: 139.xxx.xxx.xxx.xip.io
@@ -265,9 +267,32 @@ to:
 routingConfig:
   subdomain: demo.i3-cloud.com
 ```
-Start cluster:
+
+Start cluster with specific --host-data-dir:
 ```
-oc cluster up
+oc cluster up --host-data-dir=/root/cluster1 --public-hostname=demo.i3-cloud.com --routing-suffix=demo.i3-cloud.com --use-existing-config
+oc cluster status
+The OpenShift cluster was started 2 minutes ago
+
+Web console URL: https://139.59.243.79:8443
+
+Config is at host directory /var/lib/origin/openshift.local.config
+Volumes are at host directory /var/lib/origin/openshift.local.volumes
+Data is at host directory /root/cluster1
+```
+
+Expose Application to public
+```
+oc expose service deployment-example
+route "deployment-example" exposed
+
+oc get svc
+NAME                 CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+deployment-example   172.30.198.162   <none>        8080/TCP   8m
+
+NAME                 HOST/PORT                                            PATH      SERVICES             PORT       TERMINATION
+deployment-example   deployment-example-test-project2.demo.i3-cloud.com             deployment-example   8080-tcp   
+
 ```
 
 ---
