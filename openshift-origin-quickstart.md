@@ -218,6 +218,36 @@ oc status
 curl 172.30.126.164:8080 # (RIGHT PLACE??)
 ```
 
+---
+# Basic Configuration
+---
+
+Change apps deployment domain name
+----
+
+Shutdown Cluster
+```
+oc cluster down
+```
+- Configuration location
+    --master-config=`/var/lib/origin/openshift.local.config/master/master-config.yaml`
+    --node-config=`/var/lib/origin/openshift.local.config/node-139.xxx.xxx.xxx/node-config.yaml`
+
+Line 204 edit:
+```
+routingConfig:
+  subdomain: 139.xxx.xxx.xxx.xip.io
+ ```
+to:
+```
+routingConfig:
+  subdomain: demo.i3-cloud.com
+```
+Start cluster:
+```
+oc cluster up
+```
+
 
 ### Screenshots
 ![login page](https://raw.githubusercontent.com/isnuryusuf/openshift-install/master/image1.png?raw=true)
