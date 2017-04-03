@@ -52,6 +52,54 @@ yum install centos-release-openshift-origin
 yum install origin-clients
 oc cluster up
 ```
+Example Output:
+```
+-- Checking OpenShift client ... OK
+-- Checking Docker client ... OK
+-- Checking Docker version ... OK
+-- Checking for existing OpenShift container ... OK
+-- Checking for openshift/origin:v1.4.1 image ... 
+   Pulling image openshift/origin:v1.4.1
+   Pulled 0/3 layers, 3% complete
+   Pulled 1/3 layers, 33% complete
+   Pulled 2/3 layers, 86% complete
+   Pulled 3/3 layers, 100% complete
+   Extracting
+   Image pull complete
+-- Checking Docker daemon configuration ... OK
+-- Checking for available ports ... OK
+-- Checking type of volume mount ... 
+   Using nsenter mounter for OpenShift volumes
+-- Creating host directories ... OK
+-- Finding server IP ... 
+   Using 139.xx.xx.xxx as the server IP
+-- Starting OpenShift container ... 
+   Creating initial OpenShift configuration
+   Starting OpenShift using container 'origin'
+   Waiting for API server to start listening
+   OpenShift server started
+-- Adding default OAuthClient redirect URIs ... OK
+-- Installing registry ... OK
+-- Installing router ... OK
+-- Importing image streams ... OK
+-- Importing templates ... OK
+-- Login to server ... OK
+-- Creating initial project "myproject" ... OK
+-- Removing temporary directory ... OK
+-- Server Information ... 
+   OpenShift server started.
+   The server is accessible via web console at:
+       https://139.xx.xx.xxx:8443
+
+   You are logged in as:
+       User:     developer
+       Password: developer
+
+   To login as administrator:
+       oc login -u system:admin
+```
+
+
 
 Running in a Docker Container
 ----
