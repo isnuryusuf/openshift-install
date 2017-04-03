@@ -7,15 +7,17 @@ Note1: This is setup for any of the quickstarts
   - yum install centos-release-openshift-origin
   - yum install wget git net-tools bind-utils iptables-services bridge-utils bash-completion origin-clients 
 
--Install and setup docker
+- Install and setup docker
   - yum install docker
 
 #edit /etc/sysconfig/docker file and add --insecure-registry 172.30.0.0/16 to the OPTIONS parameter.
 sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16"' \
 /etc/sysconfig/docker
+
 systemctl is-active docker
 systemctl enable docker
 systemctl start docker
+
 
 # Setup
 
@@ -34,7 +36,6 @@ oc cluster up
 
 Running in a Docker Container
 ----
-Generic OpenShift Origin Instructions
 
 docker run -d --name "origin" \
 --privileged --pid=host --net=host \ -v /:/rootfs:ro -v /var/run:/var/run:rw -v /sys:/sys -v /var/lib/docker:/var/lib/docker:rw \ -v /var/lib/origin/openshift.local.volumes:/var/lib/origin/openshift.local.volumes \ registry.centos.org/openshift/origin start
@@ -42,16 +43,17 @@ docker run -d --name "origin" \
 
 Running from a rpm
 ----
-Generic OpenShift Origin Instructions
 
 yum install origin
 openshift start
 export KUBECONFIG="$(pwd)"/openshift.local.config/master/admin.kubeconfig
 export CURL_CA_BUNDLE="$(pwd)"/openshift.local.config/master/ca.crt
 sudo chmod +r "$(pwd)"/openshift.local.config/master/admin.kubeconfig
-Installer Installation Steps
-Note1: This section is still being worked on. You will hit errors. It will fail. But we're working on it.
 
+
+Installer Installation Steps
+----
+Note1: This section is still being worked on. You will hit errors. It will fail. But we're working on it.
 Note2: openshift-ansible can work on ansible 1.9.4 and above.
 
 yum install centos-release-openshift-origin
@@ -60,7 +62,9 @@ yum --enablerepo=centos-openshift-origin-testing install atomic-openshift-utils
 atomic-openshift-installer install
 answer questions as it steps you through an installation
 prerequisites - https://docs.openshift.com/enterprise/3.2/install_config/install/prerequisites.html
-Testing
+
+
+# Testing
 
 Generic OpenShift Origin Documentation
 ----
