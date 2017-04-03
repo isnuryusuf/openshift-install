@@ -16,23 +16,32 @@ sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/
 systemctl is-active docker
 systemctl enable docker
 systemctl start docker
-Setup
+
+# Setup
 
 Pick One, don't do all four
-----
+
 
 OC CLUSTER
+----
+
 Note1: This section is still being worked on.
 
 yum install centos-release-openshift-origin
 yum install origin-clients
 oc cluster up
+
+
 Running in a Docker Container
+----
 Generic OpenShift Origin Instructions
 
 docker run -d --name "origin" \
 --privileged --pid=host --net=host \ -v /:/rootfs:ro -v /var/run:/var/run:rw -v /sys:/sys -v /var/lib/docker:/var/lib/docker:rw \ -v /var/lib/origin/openshift.local.volumes:/var/lib/origin/openshift.local.volumes \ registry.centos.org/openshift/origin start
+
+
 Running from a rpm
+----
 Generic OpenShift Origin Instructions
 
 yum install origin
@@ -54,8 +63,11 @@ prerequisites - https://docs.openshift.com/enterprise/3.2/install_config/install
 Testing
 
 Generic OpenShift Origin Documentation
+----
 
 Quick Test 1
+----
+
 oc login
 Username: test
 Password: test
@@ -65,7 +77,9 @@ oc status
 curl 172.30.126.164:8080 # (example v1) (Use URL that it gives you for svc/deployment-example)
 oc tag deployment-example:v2 deployment-example:latest
 curl 172.30.126.164:8080 # (example2 v2)
+
 Quick Test 2
+----
 oc login -u system:admin
 oc project default
 oadm registry --credentials=./openshift.local.config/master/openshift-registry.kubeconfig
