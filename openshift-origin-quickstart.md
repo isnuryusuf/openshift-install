@@ -9,12 +9,13 @@ Note1: This is setup for any of the quickstarts
   yum install wget git net-tools bind-utils iptables-services bridge-utils bash-completion origin-clients 
 ```
 
+
 - Install and setup docker
 ```
   yum install docker
 ```
 
-#edit /etc/sysconfig/docker file and add --insecure-registry 172.30.0.0/16 to the OPTIONS parameter.
+#edit `/etc/sysconfig/docker` file and add --insecure-registry 172.30.0.0/16 to the OPTIONS parameter.
 ```
   sed -i '/OPTIONS=.*/c\OPTIONS="--selinux-enabled --insecure-registry 172.30.0.0/16"' /etc/sysconfig/docker
   systemctl is-active docker
