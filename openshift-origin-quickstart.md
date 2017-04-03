@@ -232,7 +232,25 @@ Login as system:admin
 ----
 ```
 oc login -u system:admin -n default
+Logged into "https://139.59.243.79:8443" as "system:admin" using existing credentials.
 
+You have access to the following projects and can switch between them with 'oc project <projectname>':
+
+  * default
+    kube-system
+    myproject
+    openshift
+    openshift-infra
+    test
+    test-project1
+    test-project2
+    test2
+
+Using project "default".
+```
+
+```
+oc status
 In project default on server https://139.59.243.79:8443
 
 svc/docker-registry - 172.30.248.225:5000
