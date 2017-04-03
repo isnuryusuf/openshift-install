@@ -9,6 +9,12 @@ Note1: This is setup for any of the quickstarts
 ip-address  domain-name.tld
 ```
 
+- Setting hostname at server:
+```
+hostnamectl set-hostname domain-name.tld
+```
+
+
 - Install needed packages
 ```
   yum install centos-release-openshift-origin
