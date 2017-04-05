@@ -21,7 +21,8 @@ Lab and Demo Schedule
 ---
 - Openshift Installation
     - openshift-origin-quickstart.md =  Quick all-in-one install
-    - openshift-origin-from-source.txt = Installing from Souce / Latest Release
+    - openshift-origin-from-source.txt = Installing from Souce / Latest Release (optional)
+    - openshift-enterprise.txt =  Openshit Enterprise on Red Hat 7 (optional)
 
 - Docker Orchestration using Openshift
 - Auto-Scaling using Openshift
