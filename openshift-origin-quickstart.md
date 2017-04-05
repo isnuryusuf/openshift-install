@@ -398,9 +398,9 @@ oadm policy add-cluster-role-to-user cluster-admin yusuf
 # Screenshots
 ---
 
-![login page](https://raw.githubusercontent.com/isnuryusuf/openshift-install/master/image1.png?raw=true)
-![deploy1](https://github.com/isnuryusuf/openshift-install/blob/master/image2.png?raw=true)
-![deploy2](https://github.com/isnuryusuf/openshift-install/blob/master/image3.png?raw=true)
+![login page](https://github.com/isnuryusuf/openshift-install/blob/master/images/image1.png?raw=true)
+![deploy1](https://github.com/isnuryusuf/openshift-install/blob/master/images/image2.png?raw=true)
+![deploy2](https://github.com/isnuryusuf/openshift-install/blob/master/images/image3.png?raw=true)
 
 
 
