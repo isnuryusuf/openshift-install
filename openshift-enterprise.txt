@@ -1,0 +1,715 @@
+#######################################################################################################################
+Guided Exercise: Preparing for Installation
+/root/DO280/labs/install-preparing/docker-storage-setup (master and node)
+#######################################################################################################################
+[student@workstation ~]$ ssh root@master
+[root@master ~]# host node.lab.example.com
+
+[root@master ~]# ping -c1 yourName.cloudapps.lab.example.com
+PING yourName.cloudapps.lab.example.com (172.25.250.11) 56(84) bytes of data.
+64 bytes from node.lab.example.com (172.25.250.11): icmp_seq=1 ttl=64 time=2.57 ms
+
+[root@master ~]# hostname
+[root@master ~]# ip addr show dev eth0 | grep "inet " | awk '{print $2}' | cut -f1 -d/
+172.25.250.10
+
+[root@master ~]# host $(hostname)
+master.lab.example.com has address 172.25.250.10
+
+[root@master ~]# yum repolist
+Loaded plugins: langpacks, search-disabled-repos
+...Output omitted...
+repo id                                  repo name                                                 status
+rhel-7-server-extras-rpms                Remote classroom copy of RHEL Extras                        393
+rhel-7-server-optional-rpms              Remote classroom copy of Optional RHEL  RPMS              4,647
+rhel-7-server-ose-3.4-rpms               Remote classroom copy of OCP RPMS                           553
+rhel_dvd                                 Remote classroom copy of dvd                              4,751
+repolist: 10,344
+
+[root@master ~]# cat /etc/yum.repos.d/training.repo
+[rhel-7-server-optional-rpms]
+baseurl = http://content.example.com/ocp3.4/x86_64/rhelopt
+enabled = true
+gpgcheck = false
+name = Remote classroom copy of Optional RHEL  RPMS
+
+[rhel-7-server-extras-rpms]
+baseurl = http://content.example.com/ocp3.4/x86_64/rhelextras
+enabled = true
+gpgcheck = false
+name = Remote classroom copy of RHEL Extras
+
+[rhel-7-server-ose-3.4-rpms]
+baseurl = http://content.example.com/ocp3.4/x86_64/ocp
+enabled = true
+gpgcheck = false
+name = Remote classroom copy of OCP RPMS
+
+[root@master ~]# ssh-keygen -f /root/.ssh/id_rsa -N ''
+Generating public/private rsa key pair.
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+The key fingerprint is:
+F5:8e:39:3d:a6:64:66:c7:3c:03:cb:fd:48:7a:26:e9
+root@master.lab.example.com
+The key's randomart image is:
++--[ RSA 2048]----+
+|                 |
+|                 |
+|          .      |
+|         . .     |
+|        S . .    |
+|         . @     |
+|          @.&    |
+|         =oBo*   |
+|         .E+. .  |
++-----------------+
+
+[root@master ~]# ssh-copy-id root@node.lab.example.com
+The authenticity of host 'node.lab.example.com (172.25.250.11)' can't be established.
+ECDSA key fingerprint is 96:ef:bf:b2:a4:b4:44:63:49:8a:32:ac:92:e7:cc:ad.
+Are you sure you want to continue connecting (yes/no)? yes
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+root@node.lab.example.com's password: redhat
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@node.lab.example.com'"
+and check to make sure that only the key(s) you wanted were added.
+
+[root@master ~]# ssh-copy-id root@master.lab.example.com
+The authenticity of host 'master.lab.example.com (172.25.250.10)' can't be established.
+ECDSA key fingerprint is 96:ef:bf:b2:a4:b4:44:63:49:8a:32:ac:92:e7:cc:ad.
+Are you sure you want to continue connecting (yes/no)? yes
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+root@master.lab.example.com's password: redhat
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@master.lab.example.com'"
+and check to make sure that only the key(s) you wanted were added.
+
+[root@master ~]# systemctl status firewalld
+[root@master ~]# systemctl stop firewalld
+
+[root@master ~]# systemctl disable firewalld
+Removed symlink '/etc/systemd/system/basic.target.wants/firewalld.service'
+Removed symlink '/etc/systemd/system/dbus-org.fedoraproject.FirewallD.service'
+
+[root@master ~]#  curl https://workstation.lab.example.com:5000/v2/openshift3/php-55-rhel7/manifests/latest
+curl: (60) Peer's certificate issuer has been marked as not trusted by the user.
+...Output omitted...
+
+[root@master ~]# scp root@workstation.lab.example.com:/etc/pki/tls/certs/example.com.crt /etc/pki/ca-trust/source/anchors/
+[root@master ~]# update-ca-trust extract
+
+[root@master ~]# curl  https://workstation.lab.example.com:5000/v2/openshift3/php-55-rhel7/manifests/latest
+{
+   "schemaVersion": 1,
+   "name": "openshift3/php-55-rhel7",
+   "tag": "latest",
+   "architecture": "amd64",
+...
+      "signature": "N5L82HQ3poEBWxCLxvPF..."
+      "protected": "eyJmb3JtYXRMZW5ndGgi..."
+    }
+  ]
+}
+
+[root@master ~]# yum -y install docker
+
+Use a text editor such as vi to edit the /etc/sysconfig/docker file.
+Comment the line starting with ADD_REGISTRY and add two new lines as follows:
+#ADD_REGISTRY='--add-registry registry.access.redhat.com'
+ADD_REGISTRY='--add-registry workstation.lab.example.com:5000'
+BLOCK_REGISTRY='--block-registry docker.io --block-registry registry.access.redhat.com'
+
+[root@master ~]# systemctl stop docker.service
+[root@master ~]# rm -rf /var/lib/docker/*
+
+[root@master ~]# cat /root/DO280/labs/install-preparing/docker-storage-setup
+DEVS=/dev/vdb
+VG=docker-vg
+SETUP_LVM_THIN_POOL=yes
+
+[root@master ~]# cp /root/DO280/labs/install-preparing/docker-storage-setup \
+/etc/sysconfig/docker-storage-setup
+cp: overwrite ‘/etc/sysconfig/docker-storage-setup’? y
+
+[root@master ~]# lvmconf --disable-cluster
+[root@master ~]#  docker-storage-setup
+...Output omitted...
+INFO: Device node /dev/vdb1 exists.
+  Physical volume "/dev/vdb1" successfully created.
+  Volume group "docker-vg" successfully created
+  Using default stripesize 64.00 KiB.
+  Rounding up size to full physical extent 24.00 MiB
+  Logical volume "docker-pool" created.
+  Logical volume docker-vg/docker-pool changed.
+
+
+[root@master ~]# lvs /dev/docker-vg/docker-pool
+LV          VG        Attr       LSize Pool Origin Data%  Meta%    Move  Log  Cpy%Sync  Convert
+docker-pool docker-vg twi-a-t--- 7.95g            0.00   0.15
+
+[root@master ~]# cat /etc/sysconfig/docker-storage
+DOCKER_STORAGE_OPTIONS="--storage-driver devicemapper --storage-opt dm.fs=xfs \
+--storage-opt dm.thinpooldev=/dev/mapper/docker--vg-docker--pool \
+--storage-opt dm.use_deferred_removal=true "
+
+[root@master ~]# systemctl start docker
+[root@master ~]# systemctl enable docker
+
+[root@master ~]# docker pull rhel7
+Using default tag: latest
+Trying to pull repository workstation.lab.example.com:5000/rhel7 ...
+latest: Pulling from workstation.lab.example.com:5000/rhel7
+
+
+
+#######################################################################################################################
+Guided Exercise: Installing Packages and Fetching Images
+/root/DO280/labs/fetch/fetch.bash (both master and node)
+#######################################################################################################################
+[student@workstation ~]$ wget http://materials.example.com/do280-ansible.tar.gz
+[student@workstation ~]$ tar xzf do280-ansible.tar.gz
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'install_prep'
+
+[student@workstation ~]$ ssh root@master
+[root@master ~]# yum -y install atomic-openshift-docker-excluder atomic-openshift-excluder atomic-openshift-utils \
+bind-utils bridge-utils git iptables-services net-tools wget
+
+[root@master ~]# bash /root/DO280/labs/fetch/fetch.bash
+[root@master ~]# docker images
+...Output omitted...
+workstation.lab.example.com:5000/openshift3/mysql-55-rhel7    latest  ..
+workstation.lab.example.com:5000/rhel7                        latest  ..
+workstation.lab.example.com:5000/jboss-eap-6/eap64-openshift  latest  ..
+workstation.lab.example.com:5000/openshift3/registry-console  3.3     ..
+
+
+
+
+#######################################################################################################################
+Guided Exercise: Running the Installer
+/etc/sysconfig/docker
+#######################################################################################################################
+[student@workstation ~]$ wget http://materials.example.com/do280-ansible.tar.gz
+[student@workstation ~]$ tar xzf do280-ansible.tar.gz
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'install_and_fetch'
+[student@workstation ~]$ ssh root@master
+[student@workstation ~]$ ssh root@node
+[root@master ~]# atomic-openshift-excluder unexclude
+[root@node ~]# atomic-openshift-excluder unexclude
+
+[root@master ~]# cp /etc/sysconfig/docker /etc/sysconfig/docker-class
+[root@node ~]# cp /etc/sysconfig/docker /etc/sysconfig/docker-class
+
+[root@master ~]# atomic-openshift-installer install
+-----------------------------------------------------------------------------------------------------------------------
+Welcome to the OpenShift Enterprise 3 installation.
+Please confirm that following prerequisites have been met:
+
+* All systems where OpenShift will be installed are running Red Hat Enterprise Linux 7.
+* All systems are properly subscribed to the required OpenShift Enterprise 3 repositories.
+* All systems have run docker-storage-setup (part of the Red Hat docker RPM).
+* All systems have working DNS that resolves not only from the perspective of the installer, but also from within the cluster.
+
+When the process completes you will have a default configuration for masters and nodes.  For ongoing environment maintenance it's recommended that the official Ansible playbooks be used.
+For more information on installation prerequisites please see:
+https://docs.openshift.com/enterprise/latest/admin_guide/install/prerequisites.html
+Are you ready to continue? [y/N]: y
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+This installation process involves connecting to remote hosts via ssh. Any account may be used.
+However, if a non-root account is used, then it must have passwordless sudo access.
+User for ssh access [root]: Enter
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Which variant would you like to install?
+(1) OpenShift Container Platform
+(2) Registry
+Choose a variant from above:  [1]: Enter
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+*** Host Configuration ***
+You must now specify the hosts that will compose your OpenShift cluster.
+Please enter an IP address or hostname to connect to for each system in the cluster. You will then be prompted to identify what role you want this system to serve in the cluster.
+OpenShift masters serve the API and web console and coordinate the jobs to run across the environment. Optionally, you can specify multiple master systems for a high-availability (HA) deployment. If you choose an HA deployment, then you are prompted to identify a *separate* system to act as the load balancer for your cluster once you define all masters and nodes.
+Any masters configured as part of this installation process are also
+configured as nodes. This enables the master to proxy to pods from the API. By default, this node is unschedulable, but this can be changed after installation with the 'oadm manage-node' command.
+OpenShift nodes provide the runtime environments for containers. They host the required services to be managed by the master.
+http://docs.openshift.com/enterprise/latest/architecture/infrastructure_components/kubernetes_infrastructure.html#master
+http://docs.openshift.com/enterprise/latest/architecture/infrastructure_components/kubernetes_infrastructure.html#node
+Enter hostname or IP address: master.lab.example.com
+Will this host be an OpenShift master? [y/N]: y
+Will this host be RPM or Container based (rpm/container)? [rpm]: Enter
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+*** Installation Summary ***
+
+Hosts:
+- master.lab.example.com
+  - OpenShift master
+  - OpenShift node
+  - Etcd
+Total OpenShift masters: 1
+Total OpenShift nodes: 1
+NOTE: Add a total of 3 or more masters to perform an HA installation.
+Do you want to add additional hosts? [y/N]: y
+Enter hostname or IP address: node.lab.example.com
+Will this host be an OpenShift master? [y/N]: N
+Will this host be RPM or Container based (rpm/container)? [rpm]: Enter
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+*** Installation Summary ***
+Hosts:
+- master.lab.example.com
+  - OpenShift master
+  - OpenShift node (Unscheduled)
+  - Etcd
+- node.lab.example.com
+  - OpenShift node (Dedicated)
+Total OpenShift masters: 1
+Total OpenShift nodes: 2
+NOTE: Add a total of 3 or more masters to perform an HA installation.
+Do you want to add additional hosts? [y/N]: N
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+You have chosen to install a single master cluster (non-HA).
+In a single master cluster, the cluster host name (Ansible variable openshift_master_cluster_public_hostname) is set by default to the host name of the single master. In a multiple master (HA) cluster, the FQDN of a host must be provided that will be configured as a proxy. This could be either an existing load balancer configured to balance all masters on
+port 8443 or a new host that would have HAProxy installed on it.
+(Optional)
+If you want to override the cluster host name now to something other than the default (the host name of the single master), or if you think you might add masters later to become an HA cluster and want to future proof your cluster host name choice, please provide a FQDN. Otherwise, press ENTER to continue and accept the default.
+Enter hostname or IP address [None]: Enter
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Setting up high-availability masters requires a storage host. Please provide a host that will be configured as a Registry Storage.
+Note: Containerized storage hosts are not currently supported.
+Enter hostname or IP address [master.lab.example.com]: Enter
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+You might want to override the default subdomain used for exposed routes. If you don't know what this is, use the default value.
+New default subdomain (ENTER for none) []: cloudapps.lab.example.com
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+If a proxy is needed to reach HTTP and HTTPS traffic, please enter the
+name below. This proxy will be configured by default for all processes
+that need to reach systems outside the cluster. An example proxy value
+would be:
+    http://proxy.example.com:8080/
+More advanced configuration is possible if using Ansible directly:
+https://docs.openshift.com/enterprise/latest/install_config/http_proxies.html
+Specify your http proxy ? (ENTER for none) []: Enter
+Specify your https proxy ? (ENTER for none) []: Enter
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+*** Installation Summary ***
+
+Hosts:
+- master.lab.example.com
+  - OpenShift master
+  - OpenShift node (Unscheduled)
+  - Etcd
+- node.lab.example.com
+  - OpenShift node (Dedicated)
+- None
+  - Storage
+
+Total OpenShift masters: 1
+Total OpenShift nodes: 2
+
+NOTE: Add a total of 3 or more masters to perform an HA installation.
+
+Gathering information from hosts...
+
+The following is a list of the facts gathered from the provided hosts. The hostname for a system inside the cluster is often different from the hostname that is resolveable from command-line or web clients, therefore these settings cannot be validated automatically.
+
+For some cloud providers, the installer is able to gather metadata exposed in the instance, so reasonable defaults will be provided.
+
+Please confirm that they are correct before moving forward.
+
+
+master.lab.example.com,172.25.250.10,172.25.250.10, master.lab.example.com,master.lab.example.com
+node.lab.example.com,172.25.250.11,172.25.250.11, node.lab.example.com,node.lab.example.com
+
+Format:
+
+connect_to,IP,public IP,hostname,public hostname
+
+Notes:
+ * The installation host is the hostname from the installer's perspective.
+ * The IP of the host should be the internal IP of the instance.
+ * The public IP should be the externally accessible IP associated with the instance
+ * The hostname should resolve to the internal IP from the instances themselves.
+ * The public hostname should resolve to the external IP from hosts outside of the cloud.
+
+Do the above facts look correct? [y/N]: y
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Wrote atomic-openshift-installer config: /root/.config/openshift/installer.cfg.yml
+Wrote Ansible inventory: /root/.config/openshift/hosts
+Ready to run the installation process.
+If changes are needed please edit the config file above and re-run.
+Are you ready to continue? [y/N]: y
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+...Output omitted...
+The installation was successful!
+If this is your first time installing please take a look at the Administrator Guide for advanced options related to routing, storage, authentication, and more:
+http://docs.openshift.com/enterprise/latest/admin_guide/overview.html
+-----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+#######################################################################################################################
+Guided Exercise: Completing Postinstallation Tasks
+/root/DO280/labs/install/hello-pod.json (master)
+/root/DO280/labs/install/image-streams-rhel7.json (master)
+/root/DO280/labs/installjboss-image-streams.json (master)
+#######################################################################################################################
+[student@workstation ~]$ wget http://materials.example.com/do280-ansible.tar.gz
+[student@workstation ~]$ tar xzf do280-ansible.tar.gz
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'install_ocp'
+
+[student@workstation ~]$ ssh root@master
+[student@workstation ~]$ ssh root@node
+
+[root@master ~]# cp /etc/sysconfig/docker-class /etc/sysconfig/docker
+cp: overwrite '/etc/sysconfig/docker'? yes
+[root@master ~]# systemctl restart docker
+
+[root@node ~]# cp /etc/sysconfig/docker-class /etc/sysconfig/docker
+cp: overwrite '/etc/sysconfig/docker'? yes
+[root@node ~]# systemctl restart docker
+
+[root@master ~]# atomic-openshift-excluder exclude
+[root@node ~]# atomic-openshift-excluder exclude
+
+[root@master ~]# oc get nodes
+[root@master ~]# oc get pods
+
+[root@master ~]# oc edit dc registry-console
+Search for the line:
+image: registry.access.redhat.com/openshift3/registry-console:3.3
+
+And change it to:
+image: workstation.lab.example.com:5000/openshift3/registry-console:3.3
+
+[root@master ~]# oc get pods
+NAME                       READY     STATUS    RESTARTS   AGE
+docker-registry-6-oytdi    1/1       Running   0          1m
+registry-console-2-wijvb   1/1       Running   0          20s
+router-1-7n637             1/1       Running   0          1m
+
+[root@master ~]# systemctl status atomic-openshift-master
+  atomic-openshift-master.service - Atomic OpenShift Master
+   Loaded: loaded (/usr/lib/systemd/system/atomic-openshift-master.service, enabled; vendor preset: disabled)
+   Active: active (running) since Tue 2017-01-31 01:37:32 EST; 22min ago
+...Output omitted...
+[root@master ~]# systemctl status atomic-openshift-node
+  atomic-openshift-node.service - Atomic OpenShift Node
+   Loaded: loaded (/usr/lib/systemd/system/atomic-openshift-node.service, enabled; vendor preset: disabled)
+   Active: active (running) since Tue 2017-01-31 01:47:20 EST; 16min ago
+...Output omitted...
+
+[root@node ~]# systemctl status atomic-openshift-node
+  atomic-openshift-node.service - Atomic OpenShift Node
+   Loaded: loaded (/usr/lib/systemd/system/atomic-openshift-node.service, enabled; vendor preset: disabled)
+   Active: active (running) since Tue 2017-01-31 01:47:20 EST; 16min ago
+...Output omitted...
+
+[root@master ~]# oc new-app --docker-image=workstation.lab.example.com:5000/openshift/hello-openshift
+...
+--> Creating resources ...
+...
+--> Success
+    Run 'oc status' to view your app
+
+[root@master ~]# watch oc get pods
+NAME                      READY   REASON             RESTARTS  AGE
+docker-registry-6-5ew5e   1/1     Running            0         18m
+hello-openshift-1-nm2n9   0/1     ContainerCreating  0         4s
+registry-console-1-f3vu1  1/1     Running            0         18m
+router-1-taau8            1/1     Running            0         18m
+
+[root@master ~]# oc describe pod hello-openshift-1-nm2n9 | head
+Name:                 hello-openshift-1-nm2n9
+Namespace:            default
+Security Policy:      restricted
+Node:                 node.lab.example.com/172.25.250.11
+Start Time:           Tue, 31 Jan 2017 22:17:16 +0530
+Labels:               app=hello-openshift
+...
+Status:               Running
+IP:                   10.129.0.7
+
+[root@master ~]# curl http://10.129.0.7:8080
+Hello OpenShift!
+
+[root@master ~]# oc expose svc hello-openshift
+route "hello-openshift" exposed
+
+[root@master ~]# curl http://hello-openshift-default.cloudapps.lab.example.com
+Hello OpenShift!
+
+[root@master ~]# grep subdomain /etc/origin/master/master-config.yaml
+      subdomain:  "cloudapps.lab.example.com"
+
+[root@master ~]# oc delete all -l app=hello-openshift
+imagesgtream "hello-openshift" deleted
+deploymentconfig "hello-openshift" deleted
+route "hello-openshift" deleted
+service "hello-openshift" deleted
+pod "hello-openshift-1-nm2n9" deleted
+
+
+[root@master ~]# oc delete is -n openshift --all
+[root@master ~]# oc create -f /root/DO280/labs/install/image-streams-rhel7.json -n openshift
+[root@master ~]# oc create -f /root/DO280/labs/install/jboss-image-streams.json -n openshift
+
+
+
+#######################################################################################################################
+Guided Exercise: Configuring Authentication
+/etc/origin/master/master-config.yaml (master)
+/etc/origin/openshift-passwd (master)
+#######################################################################################################################
+If you have a working OCP installation, but did not complete the Completing Postinstallation, guided exercise, run the following on the workstation host:
+[student@workstation ~]$ wget http://materials.example.com/do280-ansible.tar.gz
+[student@workstation ~]$ tar xzf do280-ansible.tar.gz
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'post_install'
+
+If you do not have a working OCP installation, reset the master and node hosts, then run the following on the workstation host:
+[student@workstation ~]$ wget http://materials.example.com/do280-ansible.tar.gz
+[student@workstation ~]$ tar xzf do280-ansible.tar.gz
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'install_ocp'
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'post_install'
+
+
+[student@workstation ~]$ ssh root@master.lab.example.com
+[root@master ~]# yum -y install httpd-tools
+[root@master ~]# vim /etc/origin/master/master-config.yaml
+...Output omitted...
+oauthConfig:
+  assetPublicURL: https://master.lab.example.com:8443/console/
+  grantConfig:
+    method: auto
+  identityProviders:
+  - challenge: true
+    login: true
+    mappingMethod: claim
+    name: deny_all
+    provider:
+      apiVersion: v1
+      kind: DenyAllPasswordIdentityProvider
+...Output omitted...
+
+Replace DenyAllPasswordIdentityProvider with HTPasswdPasswordIdentityProvider in the kind attribute:
+...Output omitted...
+oauthConfig:
+  assetPublicURL: https://master.lab.example.com:8443/console/
+  grantConfig:
+    method: auto
+  identityProviders:
+  - challenge: true
+    login: true
+    mappingMethod: claim
+    name: deny_all
+    provider:
+      apiVersion: v1
+      kind: HTPasswdPasswordIdentityProvider
+...Output omitted...
+
+Add an attribute named file pointing to /etc/origin/openshift-passwd. This line must go directly above or below the line that we previously modified and it must be indented at the same level. Use :set ai to enable auto-indenting while you edit the file.
+...
+oauthConfig:
+  assetPublicURL: https://master.lab.example.com:8443/console/
+  grantConfig:
+    method: auto
+  identityProviders:
+  - challenge: true
+    login: true
+    mappingMethod: claim
+    name: deny_all
+    provider:
+      apiVersion: v1
+      file: /etc/origin/openshift-passwd
+      kind: HTPasswdPasswordIdentityProvider
+...Output omitted...
+
+
+[root@master ~]# touch /etc/origin/openshift-passwd
+[root@master ~]# htpasswd -b /etc/origin/openshift-passwd student redhat
+Adding password for user student
+[root@master ~]# systemctl restart atomic-openshift-master
+
+
+
+#######################################################################################################################
+Guided Exercise: Testing the Installation
+http://myapp.hello-s2i-php.cloudapps.lab.example.com
+#######################################################################################################################
+Complete the Configuring Authentication guided exercise before you start.
+If you have a working OCP installation, but you did not complete the Configuring Authentication, guided exercise, run the following on the workstation host:
+[student@workstation ~]$ wget http://materials.example.com/do280-ansible.tar.gz
+[student@workstation ~]$ tar xzf do280-ansible.tar.gz
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'config_auth'
+
+If you do not have a working OCP installation, reset the master host and the node host, then run the following on the workstation host:
+[student@workstation ~]$ wget http://materials.example.com/do280-ansible.tar.gz
+[student@workstation ~]$ tar xzf do280-ansible.tar.gz
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'install_ocp'
+[student@workstation ~]$ ansible-playbook playbook.yml --tags 'config_auth'
+
+
+1. Open a web browser (Applications → Internet → Firefox Web Browser) on the workstation host, and open the following URL: https://master.lab.example.com:8443. Use the username student and password redhat to log in to the OCP web console.
+
+2. Create a new project.
+2.1. Create a new project by clicking New Project.
+2.2. In the New Project screen, enter the following details:
+
+Name: hello-s2i-php
+Display Name: Hello S2I PHP
+Description: A PHP project built by the S2I
+Click Create.
+
+2.3. Since this test application uses PHP, click PHP in the Languages section of the Browse Catalog screen.
+2.4. The private registry on workstation.lab.example.com has only the php-55-rhel7 docker image, so select 5.5 in the PHP drop-down menu and then click Select.
+2.5. In the next screen, specify the Name as myapp, and the Git Repository URL as http://workstation.lab.example.com/php-helloworld and then click Create.
+2.6. You will receive a confirmation that the application has been created. Click the Continue to overview link to monitor the build process.
+
+3. View the build logs
+3.1. Wait for the build to finish. It may take some time, depending on the speed and network performance of your environment. Click View Log to view the build logs as OCP builds the application image, pushes it to the internal OCP registry, and launches a pod based on the image. 
+Watch the log until you see the status change from Running to Complete. You should also see Push successful at the bottom of the log. Return to the overview page by clicking on Overview on the left-side navigation.
+
+3.2. When the build finishes, one pod is started.
+
+
+4. View the project and pod details using the oc client.
+4.1. Open a new terminal window on the workstation host and access the master host:
+[student@workstation ~]$ ssh root@master
+
+4.2. Verify that you are an OpenShift cloud administrator on the master host. If necessary log in as system:admin.
+[root@master ~]# oc whoami
+system:admin
+
+[root@master ~]# oc login -u system:admin
+Logged into "https://master.lab.example.com:8443" as "system:admin" using existing credentials.
+
+You have access to the following projects and can switch between them with 'oc project <projectname>':
+
+  * default
+    hello-s2i-php
+    kube-system
+    logging
+    management-infra
+    openshift
+    openshift-infra
+
+Using project "default".
+
+
+4.3. Verify the available projects:
+[root@master ~]# oc get projects
+NAME               DISPLAY NAME    STATUS
+hello-s2i-php      Hello S2I PHP   Active
+kube-system                        Active
+logging                            Active
+management-infra                   Active
+openshift                          Active
+openshift-infra                    Active
+default                            Active
+
+4.4. Select the hello-s2i-php project:
+[root@master ~]# oc project hello-s2i-php
+Now using project "hello-s2i-php" on server "https://master.lab.example.com:8443".
+
+4.5. Verify the builds available for this project:
+[root@master ~]# oc get builds
+NAME      TYPE      FROM          STATUS     STARTED          DURATION
+myapp-1   Source    Git@de02d79   Complete   15 minutes ago   25s
+
+Take note of the name. It will be necessary to view the build log.
+
+4.6. Verify the build log:
+[root@master ~]# oc logs build/myapp-1
+Cloning "http://workstation.lab.example.com/php-helloworld" ...
+	Commit:	de02d79a7eedd4603184d6b964450f990526b0de (Initial commit)
+	Author:	root <root@workstation.lab.example.com>
+	Date:	Mon Feb 6 11:23:18 2017 +0530
+---> Installing application source...
+Pushing image 172.30.114.210:5000/hello-s2i-php/myapp:latest ...
+Pushed 0/5 layers, 1% complete
+Pushed 1/5 layers, 23% complete
+Pushed 2/5 layers, 42% complete
+Pushed 3/5 layers, 69% complete
+Pushed 4/5 layers, 86% complete
+Pushed 5/5 layers, 100% complete
+Push successful
+
+4.7. Verify that a new pod was created for this application:
+[root@master ~]# oc get pods
+NAME            READY     STATUS      RESTARTS   AGE
+myapp-1-build   0/1       Completed   0          5m
+myapp-1-peig1   1/1       Running     0          4m
+
+4.8. A default route was created to this application in the format: routename-projectname.defaultdomain. To generate custom route names, you can click Show advanced routing, build, deployment and source options on the screen where you specified the application name and git repository URL, and enter your own route name.
+List the available routes:
+[root@master ~]#  oc get routes
+NAME   HOST/PORT                                      ..   SERVICES   PORT ..
+myapp  myapp-hello-s2i-php.cloudapps.lab.example.com       myapp      8080-tcp
+
+5. Test the web application.
+Navigate to the URL http://myapp-hello-s2i-php.cloudapps.lab.example.com using a web browser. A Hello World page is presented.
+
+6. Clean up.
+6.1. Remove the hello-s2i-php project:
+[root@master ~]# oc delete project hello-s2i-php
+project "hello-s2i-php" deleted
+
+6.2. Verify that the pod has been deleted:
+[root@master ~]# oc get pods
+NAME            READY     STATUS        RESTARTS   AGE
+myapp-1-peig1   1/1       Terminating   0          2m
+
+[root@master ~]# oc get pods
+No resources found.
+
+
+
+
+
+
+
+
+
+
+
