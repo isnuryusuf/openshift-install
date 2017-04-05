@@ -434,6 +434,7 @@ router-1-7n637             1/1       Running   0          1m
    Loaded: loaded (/usr/lib/systemd/system/atomic-openshift-master.service, enabled; vendor preset: disabled)
    Active: active (running) since Tue 2017-01-31 01:37:32 EST; 22min ago
 ...Output omitted...
+
 [root@master ~]# systemctl status atomic-openshift-node
   atomic-openshift-node.service - Atomic OpenShift Node
    Loaded: loaded (/usr/lib/systemd/system/atomic-openshift-node.service, enabled; vendor preset: disabled)
@@ -517,6 +518,7 @@ If you do not have a working OCP installation, reset the master and node hosts, 
 [student@workstation ~]$ ssh root@master.lab.example.com
 [root@master ~]# yum -y install httpd-tools
 [root@master ~]# vim /etc/origin/master/master-config.yaml
+-----------------------------------------------------------------------------------------------------------------------
 ...Output omitted...
 oauthConfig:
   assetPublicURL: https://master.lab.example.com:8443/console/
@@ -531,7 +533,10 @@ oauthConfig:
       apiVersion: v1
       kind: DenyAllPasswordIdentityProvider
 ...Output omitted...
+-----------------------------------------------------------------------------------------------------------------------
 
+
+-----------------------------------------------------------------------------------------------------------------------
 Replace DenyAllPasswordIdentityProvider with HTPasswdPasswordIdentityProvider in the kind attribute:
 ...Output omitted...
 oauthConfig:
@@ -547,8 +552,11 @@ oauthConfig:
       apiVersion: v1
       kind: HTPasswdPasswordIdentityProvider
 ...Output omitted...
+-----------------------------------------------------------------------------------------------------------------------
 
 Add an attribute named file pointing to /etc/origin/openshift-passwd. This line must go directly above or below the line that we previously modified and it must be indented at the same level. Use :set ai to enable auto-indenting while you edit the file.
+
+-----------------------------------------------------------------------------------------------------------------------
 ...
 oauthConfig:
   assetPublicURL: https://master.lab.example.com:8443/console/
@@ -564,12 +572,15 @@ oauthConfig:
       file: /etc/origin/openshift-passwd
       kind: HTPasswdPasswordIdentityProvider
 ...Output omitted...
+-----------------------------------------------------------------------------------------------------------------------
 
 
 [root@master ~]# touch /etc/origin/openshift-passwd
 [root@master ~]# htpasswd -b /etc/origin/openshift-passwd student redhat
 Adding password for user student
 [root@master ~]# systemctl restart atomic-openshift-master
+
+Test access https://ip-openshift:8443 user student pass redhat
 
 
 
@@ -622,6 +633,7 @@ Watch the log until you see the status change from Running to Complete. You shou
 system:admin
 
 [root@master ~]# oc login -u system:admin
+-----------------------------------------------------------------------------------------------------------------------
 Logged into "https://master.lab.example.com:8443" as "system:admin" using existing credentials.
 
 You have access to the following projects and can switch between them with 'oc project <projectname>':
@@ -635,6 +647,7 @@ You have access to the following projects and can switch between them with 'oc p
     openshift-infra
 
 Using project "default".
+-----------------------------------------------------------------------------------------------------------------------
 
 
 4.3. Verify the available projects:
@@ -705,11 +718,329 @@ No resources found.
 
 
 
+#######################################################################################################################
+Guided Exercise: Installing and Connecting to the OpenShift Instance With oc
+https://master.lab.example.com:8443
+#######################################################################################################################
+[student@workstation ~]$ sudo yum install -y atomic-openshift-clients
+[student@workstation ~]$ rpm -ql atomic-openshift-clients | head
+[student@workstation ~]$ oc help
+[student@workstation ~]$ oc login https://master.lab.example.com:8443 -u student -p redhat
+The server uses a certificate signed by an unknown authority.
+You can bypass the certificate check, but any data you send to the server could
+be intercepted by others.
+Use insecure connections? (y/n): y
+
+Login successful.
+
+You don't have any projects. You can try to create a new project, by running $ oc new-project <projectname>
+Welcome to OpenShift! See 'oc help' to get started.
+
+[student@workstation ~]$ oc whoami
+[student@workstation ~]$ oc new-project working
+[student@workstation ~]$ oc status
+[student@workstation ~]$ oc delete project working
+[student@workstation ~]$ oc logout
 
 
 
+#######################################################################################################################
+Guided Exercise: Managing an OpenShift instance using oc
+https://master.lab.example.com:8443
+#######################################################################################################################
+1. Get the current status of the OCP cluster.
+1.1. Open a new terminal on the workstation host and access the master host:
+[student@workstation ~]$ ssh root@master
+
+1.2. On the master host, log in as the system:admin user using the oc command:
+[root@master ~]# oc login -u system:admin
+
+1.3. On the master host, ensure that you are using the default project:
+[root@master]# oc project default
+
+1.4. On the master host, list the nodes that are part of the cluster and their status.
+[root@master ~]# oc get nodes
+
+This command produces a tabulated list of nodes similar to the following. Take note of any nodes that have SchedulingDisabled as part of their status descriptions. Applications (pods) cannot be deployed on such nodes.
+
+NAME                     STATUS                      AGE
+master.lab.example.com   Ready,SchedulingDisabled    1d
+node.lab.example.com     Ready                       1d
+Display more detailed information about the master:
+
+1.5. [root@master ~]# oc describe node master.lab.example.com | head -n5
+-----------------------------------------------------------------------------------------------------------------------
+Name:           master.lab.example.com
+Labels:         beta.kubernetes.io/arch=amd64
+                beta.kubernets.io/os=linux
+                kubernetes.io/hostname=master.lab.example.com
+Taints:         <none>
+-----------------------------------------------------------------------------------------------------------------------
+
+1.6. Similarly, examine the description of the node:
+[root@master ~]# oc describe node node.lab.example.com | head -n5
+-----------------------------------------------------------------------------------------------------------------------
+Name:           node.lab.example.com
+Labels:         beta.kubernetes.io/arch=amd64
+                beta.kubernets.io/os=linux
+                kubernetes.io/hostname=node.lab.example.com
+                region=infra
+1.7. Inspect the list of existing pods by using the oc get pods command.
+-----------------------------------------------------------------------------------------------------------------------
+
+[root@master ~]# oc get pods
+NAME                       READY    STATUS     RESTARTS    AGE
+docker-registry-4-ku34r    1/1      Running    3           3d
+registry-console-1-zxreg   1/1      Running    3           3d
+router-1-yhunh             1/1      Running    3           3d
+Note that these are the same pods that were deployed previously.
+
+1.8. Use the describe command against the docker-registry pod.
+[root@master ~]# oc describe pod docker-registry-4-ku34r | head
+-----------------------------------------------------------------------------------------------------------------------
+Name:             docker-registry-4-ku34r
+Namespace:        default
+Security Policy:  restricted
+Node:             node.lab.example.com/172.25.250.11
+Start Time:       Mon, 23 Jan 2017 12:17:28 -0500
+Labels:           deployment=docker-registry-4
+                  deploymentconfig=docker-registry
+                  docker-registry=default
+Status:           Running
+IP:               10.129.0.12 
+-----------------------------------------------------------------------------------------------------------------------
+
+
+2. In this section, basic troubleshooting steps are executed.
+
+2.1. One of the most useful commands available to the administrator is the oc exec command. This command allows the user to execute remote commands against a pod. Run the ls command on the registry pod.
+
+[root@master ~]# oc exec docker-registry-4-ku34r ls /
+bin
+boot
+config.yml
+dev
+etc
+home
+...
+
+2.2. Arbitrary commands can be executed, provided they are available within the container and pods where you execute them. This ability can be useful for diagnosing files, contents, and processes from within the container itself. Inspect the /etc/resolv.conf file.
+[root@master ~]# oc exec docker-registry-4-ku34r cat /etc/resolv.conf
+search default.svc.cluster.local svc.cluster.local cluster.local lab.example.com example.com
+nameserver 172.25.250.11
+nameserver 172.25.250.11
+options ndots:5
+
+2.3. Alternatively, the oc exec command also accepts additional arguments that enable the use of an interactive console. This is useful for more in-depth troubleshooting sessions. On the master node, launch a remote shell in the pod:
+[root@master ~]# oc exec docker-registry-4-ku34r -it bash
+bash-4.2$
+
+2.4. Run the same ls command that was executed before without the interactive shell:
+bash-4.2$ ls /
+bin  config.yml etc  lib   lost+found mnt proc     root sbin sys usr
+boot dev        home lib64 media      opt registry run  srv  tmp var
+
+2.5. Exit the remote shell:
+bash-4.2$ exit
+exit
+
+2.6. Use the oc get events command to view life cycle events in the OCP cluster:
+[root@master ~]# oc get events | head -n3
+LASTSEEN   FIRSTSEEN  COUNT  NAME                     KIND    SUBOBJECT               TYPE      REASON     SOURCE
+MESSAGE
+27m        27m        1      docker-registry-4-ku34r  Pod  spec.containers{registry}  Normal    Pulled     {kubelet.node.lab.example.com} Container image “openshift3/ose-docker-registry:v3.4.0.39” already present on machine
+27m        27m        1      docker-registry-4-ku34r  Pod  spec.containers{registry}  Normal    Created    {kubelet.node.lab.example.com} Created container with docker id 3ca27a5ae688; Security:[seccomp=unconfined]
 
 
 
+#######################################################################################################################
+Guided Exercise: Creating a Pod from a Docker Image
+/home/student/DO280/labs/deploy-pod (workstation)
+#######################################################################################################################
+1. Create a pod using the MySQL 5.5 image in OCP.
 
+1.1. On the workstation host, log in as the developer user, student.
+[student@workstation ~]$ oc login -u student -p redhat
+Login successful.
+
+You don't have any projects. You can try to create a new project, by running
+
+    oc new-project <projectname>
+
+1.2. Create a new project.
+[student@workstation ~]$ oc new-project database-pod
+Now using project "database-pod" on server "https://master.lab.example.com:8443".
+...
+
+1.3. Inspect the provided JSON resource definition file for the MySQL pod.
+[student@workstation ~]$ less /home/student/DO280/labs/deploy-pod/mysqldb-pod.json
+
+The file contents are:
+-----------------------------------------------------------------------------------------------------------------------
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "name": "mysqldb",
+        "labels": {
+            "name": "mysqldb"
+        }
+    },
+    "spec": {
+        "containers": [
+            {
+                "name": "mysqldb",
+                "image": "openshift3/mysql-55-rhel7",
+                "ports": [
+                    {
+                        "containerPort": 3306
+                    }
+                ],
+                "env": [
+                    {
+                        "name": "MYSQL_USER",
+                        "value": "ose"
+                    },
+                    {
+                        "name": "MYSQL_PASSWORD",
+                        "value": "openshift"
+                    },
+                    {
+                        "name": "MYSQL_DATABASE",
+                        "value": "quotes"
+                    }
+                ]
+            }
+        ]
+    }
+}
+-----------------------------------------------------------------------------------------------------------------------
+
+1.4. Create the pod using oc create.
+[student@workstation ~]$ oc create -f /home/student/DO280/labs/deploy-pod/mysqldb-pod.json
+pod "mysqldb" created
+
+
+2. Verify that the pod was created successfully:
+2.1. Use the watch oc get pods commands to monitor the pod creation.
+[student@workstation ~]$ watch oc get pods
+
+During the pod creation, the output looks like:
+NAME         READY     STATUS             RESTARTS     AGE
+mysqldb     0/1         ContainerCreating     0         5s
+
+When OCP finished creating the pod, the output will look like:
+NAME         READY     STATUS             RESTARTS     AGE
+mysqldb     1/1         Running             0         12s
+
+2.2. Inspect the environment variables from the newly created pod to see database connection properties:
+[student@workstation ~]$ oc env pod mysqldb --list
+# pods mysqldb, container mysqldb
+MYSQL_USER=ose
+MYSQL_PASSWORD=openshift
+MYSQL_DATABASE=quotes
+
+3. Populate the MySQL database.
+3.1. Inspect the SQL script that initializes the database for a sample application:
+[student@workstation ~]$ less /home/student/DO280/labs/deploy-pod/quote.sql
+create table quote (id integer primary key, msg varchar(250));
+insert into quote values (1, 'Always remember that you are absolutely unique. Just like everyone else.');
+insert into quote values (2, 'Do not take life too seriously. You will never get out of it alive.');
+insert into quote values (3, 'People who think they know everything are a great annoyance to those of us who do.');
+
+3.2. You need to populate the MySQL database with some data. To do this you must forward an unused local port to the MySQL server port on the database pod. You can then use the mysql client program on the workstation host to load data into the quotes database:
+[student@workstation ~]$ oc port-forward mysqldb 13306:3306
+Forwarding from 127.0.0.1:13306 -> 3306
+Forwarding from [::1]:13306 -> 3306
+
+3.3. Use the MySQL client to populate the pod database using the provided SQL script:
+[student@workstation ~]$ mysql -h127.0.0.1 -P13306 -uose -popenshift quotes < /home/student/DO280/labs/deploy-pod/quote.sql
+The MySQL client shows no output if the data was loaded successfully.
+
+3.4 Go back to the terminal where the oc port-forward command was left running. Use Ctrl+C to stop it. This terminal can now be closed.
+
+
+4. Verify that the MySQL server was successfully populated.
+4.1. Use oc exec to run the MySQL client inside the database pod:
+[student@workstation ~]$ oc exec mysqldb -it -- /bin/bash -c "mysql -h127.0.0.1 -uose -popenshift quotes"
+
+4.2. Run an SQL query on the quote table:
+mysql> select count(*) from quote;
+The expected output is:
++----------+
+| count(*) |
++----------+
+| 3 |
++----------+
+1 row in set (0.01 sec)
+
+4.3. Leave the MySQL client:
+mysql> exit
+
+
+5. Optional: Compare the pod definition provided for this lab to the one which is generated by oc new-app:
+5.1. Use the -o json option to just generate a resource definition file instead of creating another pod and associated resources.
+[student@workstation ~]$ oc new-app workstation.lab.example.com:5000/openshift3/mysql-55-rhel7 --name=mysqldb -o json > mysql-pod-new-app.json
+
+5.2. Inspect the mysql-pod-new-app.json file to see the pod definition that is embedded inside a DeploymentConfig resource, as the "template" attribute:
+[student@workstation ~]$ less mysql-pod-new-app.json
+
+The expected output is:
+-----------------------------------------------------------------------------------------------------------------------
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "kind": "ImageStream",
+...
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "mysqldb",
+...
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "app": "mysqldb",
+                            "deploymentconfig": "mysqldb"
+...
+                        "containers": [
+                            {
+                                "name": "mysqldb",
+                                "image": "workstation.lab.example.com:5000/openshift3/mysql-55-rhel7",
+                                "ports": [
+                                    {
+                                        "containerPort": 3306,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "volumeMounts": [
+                                    {
+                                        "name": "mysqldb-volume-1",
+                                        "mountPath": "/var/lib/mysql/data"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "status": {}
+        },
+...
+    ]
+}
+-----------------------------------------------------------------------------------------------------------------------
+
+
+6. Clean up
+Deleting the database-pod project also deletes the pod.
+[student@workstation ~]$ oc delete project database-pod
+project "database-pod" deleted
 
