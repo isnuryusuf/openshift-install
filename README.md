@@ -29,4 +29,4 @@ Lab and Demo Schedule
 - Pipeline for CI/CD
 
 
-![login page](https://github.com/isnuryusuf/openshift-install/blob/master/docker-meetup.jpg?raw=true)
+![login page](https://github.com/isnuryusuf/openshift-install/blob/master/images/docker-meetup.jpg?raw=true)
