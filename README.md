@@ -29,5 +29,5 @@ Lab and Demo Schedule
 - Source to Image deployment
 - Pipeline for CI/CD
 
-
-![login page](https://github.com/isnuryusuf/openshift-install/blob/master/images/docker-meetup.jpg?raw=true)
+![flyer2](https://raw.githubusercontent.com/isnuryusuf/openshift-install/master/images/photo6284930914341463982.jpg?raw=true)
+![flyer2](https://github.com/isnuryusuf/openshift-install/blob/master/images/docker-meetup.jpg?raw=true)
