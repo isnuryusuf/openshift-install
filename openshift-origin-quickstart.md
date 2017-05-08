@@ -115,7 +115,9 @@ Running from a rpm
 
 ```
 yum install origin
-openshift start
+openshift start --write-config=/openshift.local.config
+openshift start --master-config=/openshift.local.config/master/master-config.yaml --node-config=/openshift.local.config/node-openshit.i3-cloud.com/node-config.yaml
+#openshift start
 export KUBECONFIG="$(pwd)"/openshift.local.config/master/admin.kubeconfig
 export CURL_CA_BUNDLE="$(pwd)"/openshift.local.config/master/ca.crt
 sudo chmod +r "$(pwd)"/openshift.local.config/master/admin.kubeconfig
