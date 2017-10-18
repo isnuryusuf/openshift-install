@@ -31,3 +31,4 @@ Lab and Demo Schedule
 
 ![flyer2](https://raw.githubusercontent.com/isnuryusuf/openshift-install/master/images/photo6284930914341463982.jpg?raw=true)
 ![flyer2](https://github.com/isnuryusuf/openshift-install/blob/master/images/docker-meetup.jpg?raw=true)
+![flyer2](https://github.com/isnuryusuf/openshift-install/blob/master/images/19-Oct-Devops-Openshift-Kubernetes-Docker.jpg?raw=true)
