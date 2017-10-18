@@ -1,7 +1,7 @@
 
 ---
 # Initial Configuration for LAB
-# Setting hostname otomatis
+- Setting hostname otomatis
 ```
 IPGW=`ifconfig | grep inet | grep 255$ | cut -d " " -f 10`
 
@@ -17,7 +17,7 @@ else
 fi
 ```
 
-# Setting hostname manual
+- Setting hostname manual
 ```
 cat /etc/hosts | grep docker-host
 hostnamectl set-hostname docker-host
@@ -31,7 +31,7 @@ yum -y install net-tools vim vim-enhanced vim-common wget git net-tools bind-uti
 ```
 
 # Page 44 - Lab: Installing Docker - PreSetup
-# Install Docker dan konfigurasi Selinux untuk Docker
+- Install Docker dan konfigurasi Selinux untuk Docker
 ```
 curl -fsSL https://get.docker.com/ | sh
 systemctl is-active docker ; systemctl enable docker ; systemctl restart docker 
@@ -39,7 +39,7 @@ systemctl is-active docker ; systemctl enable docker ; systemctl restart docker
 
 ---
 # Page 45 - Lab: Installing Docker - PreSetup
-# Konfigurasi Docker insecure Network untuk docker private registry
+- Konfigurasi Docker insecure Network untuk docker private registry
 ```
 vim /usr/lib/systemd/system/docker.service
 Edit
@@ -50,7 +50,7 @@ ExecStart=/usr/bin/dockerd --insecure-registry 172.30.0.0/16 --insecure-registry
 systemctl daemon-reload ; systemctl restart docker
 ```
 
-# Running Docker container pertama anda dari private registry
+- Running Docker container pertama anda dari private registry
 ```
 docker container run -ti docker-registry:5000/ubuntu bash
 ```
@@ -58,7 +58,7 @@ docker container run -ti docker-registry:5000/ubuntu bash
 
 ---
 # Page 47 - Lab: 1st  time Playing w/ Docker
-# Running Docker container pertama anda dari private registry
+- Running Docker container pertama anda dari private registry
 ```
 docker run -t docker-registry:5000/centos bash
 docker images --all
