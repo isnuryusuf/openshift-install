@@ -287,8 +287,8 @@ yum install -y wget git net-tools bind-utils iptables-services bridge-utils bash
 yum -y install origin-clients origin
 ```
 
-# Command di bawah ini untuk mengambil openshift image dari private registry
-# Sehingga tidak perlu download ke internet
+- Command di bawah ini untuk mengambil openshift image dari private registry
+- Sehingga tidak perlu download ke internet
 ```
 docker pull docker-registry:5000/openshift/origin:v3.6.0
 docker pull docker-registry:5000/openshift/origin-deployer:v3.6.0
