@@ -296,6 +296,17 @@ docker pull docker-registry:5000/openshift/origin:v1.5.1
 docker pull docker-registry:5000/openshift/origin-pod:v1.5.1
 ```
 
+```
+docker tag docker-registry:5000/openshift/origin-deployer:v1.5.1 openshift/origin-deployer:v1.5.1
+docker tag docker-registry:5000/openshift/origin-sti-builder:v1.5.1 openshift/origin-sti-builder:v1.5.1
+docker tag docker-registry:5000/openshift/origin-docker-registry:v1.5.1 openshift/origin-docker-registry:v1.5.1
+docker tag docker-registry:5000/openshift/origin-haproxy-router:v1.5.1 openshift/origin-haproxy-router:v1.5.1
+docker tag docker-registry:5000/openshift/origin:v1.5.1 openshift/origin:v1.5.1
+docker tag docker-registry:5000/openshift/origin-pod:v1.5.1 openshift/origin-pod:v1.5.1
+```
+
+
+- Tambahkan rules firewall agar dapat mengakses Openshift
 
 ```
 iptables -I INPUT 1  -p tcp --dport 8443 -j ACCEPT
@@ -316,6 +327,22 @@ oadm policy add-cluster-role-to-user cluster-admin admin
 ---
 # Page 203 - Creating project
 # Page 204,205,208 - Origin 1st App Deployment
+- Pulling Docker image yang dibutuhkan dari Private registry
+```
+docker pull docker-registry:5000/centos/php-70-centos7
+docker pull docker-registry:5000/centos/postgresql-95-centos7
+docker pull docker-registry:5000/centos/mysql-57-centos7
+docker pull docker-registry:5000/openshift/jenkins-1-centos7
+docker pull docker-registry:5000/openshiftdemos/oc
+
+docker tag docker-registry:5000/centos/php-70-centos7 centos/php-70-centos7 
+docker tag docker-registry:5000/centos/postgresql-95-centos7 centos/postgresql-95-centos7
+docker tag docker-registry:5000/centos/mysql-57-centos7 centos/mysql-57-centos7
+docker tag docker-registry:5000/openshift/jenkins-1-centos7 openshift/jenkins-1-centos7
+docker tag docker-registry:5000/openshiftdemos/oc openshiftdemos/oc
+```
+
+
 ```
 oc login -u system:admin
 oc new-project test-project
@@ -336,6 +363,16 @@ cat myapp.yaml
 ---
 # Additional Lab - Continuous integration / continuous delivery (cicd)
 ```
+docker pull docker-registry:5000/openshiftdemos/gogs
+docker pull docker-registry:5000/openshiftdemos/sonarqube
+docker pull docker-registry:5000/openshiftdemos/nexus
+docker pull docker-registry:5000/openshiftdemos/oc
+
+docker tag docker-registry:5000/openshiftdemos/gogs openshiftdemos/gogs
+docker tag docker-registry:5000/openshiftdemos/sonarqube openshiftdemos/sonarqube
+docker tag docker-registry:5000/openshiftdemos/nexus openshiftdemos/nexus
+docker tag docker-registry:5000/openshiftdemos/oc openshiftdemos/oc
+
 git clone https://github.com/isnuryusuf/openshift-cd-demo
 cd openshift-cd-demo
 oc new-project dev --display-name="Tasks - Dev"
@@ -355,6 +392,12 @@ oc delete pod install-gogs
 oc delete pods -l app=gogs
 oc process -f cicd-template.yaml | oc create -f -
 ```
+- Nexus Repository
+user admin / pass admin123
+
+- Sonarqube 
+user admin / pass admin
+
 
 ---
 # Additional Lab - OpenShift "oc cluster up" Wrapper script
@@ -372,9 +415,8 @@ oc-cluster status
 
 
 
-
-
-
+##########################################################################################
+################ END #########################################
 ##########################################################################################
 ---
 ```
@@ -428,4 +470,33 @@ docker pull docker-registry:5000/openshift/origin-docker-registry:v1.5.1
 docker pull docker-registry:5000/openshift/origin-haproxy-router:v1.5.1
 docker pull docker-registry:5000/openshift/origin:v1.5.1
 docker pull docker-registry:5000/openshift/origin-pod:v1.5.1
+
+
+
+-----------------------------------------------------------------------
+docker tag 2b120d47353a docker-registry:5000/centos/php-70-centos7
+docker tag 1f605ad0737c docker-registry:5000/centos/postgresql-95-centos7
+docker tag 0a040983d1f4 docker-registry:5000/centos/mysql-57-centos7
+docker tag 2d9ffbfb5eba docker-registry:5000/openshift/jenkins-1-centos7
+docker tag docker.io/openshiftdemos/oc docker-registry:5000/openshiftdemos/oc
+
+docker push docker-registry:5000/centos/php-70-centos7
+docker push docker-registry:5000/centos/postgresql-95-centos7
+docker push docker-registry:5000/centos/mysql-57-centos7
+docker push docker-registry:5000/openshift/jenkins-1-centos7
+docker push docker-registry:5000/openshiftdemos/oc
+
+docker pull docker-registry:5000/centos/php-70-centos7
+docker pull docker-registry:5000/centos/postgresql-95-centos7
+docker pull docker-registry:5000/centos/mysql-57-centos7
+docker pull docker-registry:5000/openshift/jenkins-1-centos7
+docker pull docker-registry:5000/openshiftdemos/oc
+
+docker tag docker-registry:5000/centos/php-70-centos7 centos/php-70-centos7 
+docker tag docker-registry:5000/centos/postgresql-95-centos7 centos/postgresql-95-centos7
+docker tag docker-registry:5000/centos/mysql-57-centos7 centos/mysql-57-centos7
+docker tag docker-registry:5000/openshift/jenkins-1-centos7 openshift/jenkins-1-centos7
+docker tag docker-registry:5000/openshiftdemos/oc openshiftdemos/oc
+
+
 
