@@ -2,6 +2,7 @@
 ##########################################################
 # Initial Configuration for LAB
 # Setting hostname otomatis
+```
 IPGW=`ifconfig | grep inet | grep 255$ | cut -d " " -f 10`
 
 if grep -Ri "docker-host" /etc/hosts
@@ -14,13 +15,14 @@ else
 	hostnamectl set-hostname docker-host
 	hostname
 fi
-
+```
 
 # Setting hostname manual
+```
 cat /etc/hosts | grep docker-host
 hostnamectl set-hostname docker-host
 hostname
-
+```
 
 ##########################################################
 # Page 44 - Lab: Installing Docker - PreSetup
@@ -36,6 +38,7 @@ systemctl is-active docker ; systemctl enable docker ; systemctl restart docker
 ##########################################################
 # Page 45 - Lab: Installing Docker - PreSetup
 # Konfigurasi Docker insecure Network untuk docker private registry
+```
 vim /usr/lib/systemd/system/docker.service
 Edit
 ExecStart=/usr/bin/dockerd
@@ -43,46 +46,57 @@ to
 ExecStart=/usr/bin/dockerd --insecure-registry 172.30.0.0/16 --insecure-registry 192.168.1.0/24
 
 systemctl daemon-reload ; systemctl restart docker
+```
 
 # Running Docker container pertama anda dari private registry
+```
 docker container run -ti docker-registry:5000/ubuntu bash
+```
 
 
 ##########################################################
 # Page 47 - Lab: 1st  time Playing w/ Docker
 # Running Docker container pertama anda dari private registry
+```
 docker run -t docker-registry:5000/centos bash
 docker images --all
 docker ps
 docker exec -it <CONTAINER-ID> bash
-
+```
 
 ##########################################################
 # Page 49 - docker run - Run a container
+```
 docker run docker-registry:5000/centos /bin/hostname
 docker run docker-registry:5000/centos /bin/hostname
 docker run docker-registry:5000/centos date +%H:%M:%S
 docker run docker-registry:5000/centos true ; echo $?
 docker run docker-registry:5000/centos false ; echo $?
+```
 
 
 ##########################################################
 # Page 50 - docker run - Foreground mode vs. Detached mode
+```
 docker run docker-registry:5000/centos date
 docker run -d docker-registry:5000/centos date
 docker logs <CONTAINER-ID>
+```
 
 
 ##########################################################
 # Page 52 - docker run - Set the container name
+```
 docker run -d -t docker-registry:5000/debian
 docker run -d -t --name blahblah docker-registry:5000/debian
 docker ps 
 docker stop blahblah focused_raman
+```
 
 
 ##########################################################
 # Page 55 - Lab: Docker commit example
+```
 docker run --name my-container -t -i docker-registry:5000/debian
 cat >> /etc/bash.bashrc <<EOF
 > echo 'hello!'
@@ -96,6 +110,7 @@ docker commit my-container hello
 docker stop my-container; docker rm my-container
 docker run --rm -t -i hello
 docker images --all
+```
 
 
 ##########################################################
