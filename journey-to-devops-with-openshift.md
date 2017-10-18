@@ -1,5 +1,5 @@
 
-##########################################################
+---
 # Initial Configuration for LAB
 # Setting hostname otomatis
 ```
@@ -24,7 +24,7 @@ hostnamectl set-hostname docker-host
 hostname
 ```
 
-##########################################################
+---
 # Page 44 - Lab: Installing Docker - PreSetup
 ```
 yum -y install net-tools vim vim-enhanced vim-common wget git net-tools bind-utils iptables-services bridge-utils bash-completion
@@ -37,7 +37,7 @@ curl -fsSL https://get.docker.com/ | sh
 systemctl is-active docker ; systemctl enable docker ; systemctl restart docker 
 ```
 
-##########################################################
+---
 # Page 45 - Lab: Installing Docker - PreSetup
 # Konfigurasi Docker insecure Network untuk docker private registry
 ```
@@ -56,7 +56,7 @@ docker container run -ti docker-registry:5000/ubuntu bash
 ```
 
 
-##########################################################
+---
 # Page 47 - Lab: 1st  time Playing w/ Docker
 # Running Docker container pertama anda dari private registry
 ```
@@ -66,7 +66,7 @@ docker ps
 docker exec -it <CONTAINER-ID> bash
 ```
 
-##########################################################
+---
 # Page 49 - docker run - Run a container
 ```
 docker run docker-registry:5000/centos /bin/hostname
@@ -77,7 +77,7 @@ docker run docker-registry:5000/centos false ; echo $?
 ```
 
 
-##########################################################
+---
 # Page 50 - docker run - Foreground mode vs. Detached mode
 ```
 docker run docker-registry:5000/centos date
@@ -86,7 +86,7 @@ docker logs <CONTAINER-ID>
 ```
 
 
-##########################################################
+---
 # Page 52 - docker run - Set the container name
 ```
 docker run -d -t docker-registry:5000/debian
@@ -96,7 +96,7 @@ docker stop blahblah focused_raman
 ```
 
 
-##########################################################
+---
 # Page 55 - Lab: Docker commit example
 ```
 docker run --name my-container -t -i docker-registry:5000/debian
@@ -115,7 +115,7 @@ docker images --all
 ```
 
 
-##########################################################
+---
 # Page 58 - Lab: Mount examples
 ```
 docker run --rm -t -i -v /tmp/persistent:/persistent docker-registry:5000/debian
@@ -133,7 +133,7 @@ cat /inputs/bar
 touch /inputs/foo
 ```
 
-##########################################################
+---
 # Page 59 - Lab: Mount examples continue 
 ```
 mkfifo /tmp/fifo
@@ -146,7 +146,7 @@ exit
 cat /var/log/messages | grep blah
 ```
 
-##########################################################
+---
 # Page 60 - docker run-inter-container links (legacy links )
 ```
 docker run --name my-server docker-registry:5000/debian sh -c 'hostname -i && sleep 500' &
@@ -154,7 +154,7 @@ docker run --rm -t -i --link my-server:srv debian
 ping srv
 ```
 
-##########################################################
+---
 # Page 62 - User-defined networks (since v1.9.0)
 ```
 docker network create NETWORK
@@ -166,7 +166,7 @@ docker network connect bridge test-network
 docker network disconnect NETWORK test-network
 ```
 
-##########################################################
+---
 # Page 65 - Publish TCP Port
 ```
 docker run -d -p 80:80 docker-registry:5000/nginx
@@ -179,7 +179,7 @@ wget -nv http://localhost/
 wget http://172.17.0.2/
 ```
 
-##########################################################
+---
 # Page 91 - Lab: Image creation from a container
 ```
 docker run -ti ubuntu docker-registry:5000/bash
@@ -190,7 +190,7 @@ docker ps -a
 docker commit <CONTAINER-ID>
 ```
 
-##########################################################
+---
 # Page 92 - Lab: Image creation from a container
 ```
 docker images ls
@@ -200,14 +200,14 @@ docker container run tag-intra figlet hello
 ```
 
 
-##########################################################
+---
 # Page 107,108,109 - Lab: Dockerfile example
 ```
 ---------------start dari sini---------------
-############################################################
+##############################################
 # Dockerfile to build nginx container images
 # Based on debian latest version
-############################################################
+##############################################
 
 # base image: last debian release
 FROM docker-registry:5000/debian:latest
@@ -237,7 +237,7 @@ docker run --name my_first_nginx_instance -i -t
 cat /tmp/test
 ```
 
-##########################################################
+---
 # Page 112,115 - Lab: Docker Compose Ubuntu, php7-fpm, Nginx and MariaDB Example
 ```
 git clone https://github.com/isnuryusuf/docker-php7.git
@@ -245,14 +245,14 @@ cd docker-php7 ; yum -y install epel-release ; yum install -y python-pip ; pip i
 docker-compose up
 ```
 
-##########################################################
+---
 # Page 123 - Installing Portainer.io
 ```
 docker volume create portainer_data
 docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data docker-registry:5000/portainer/portainer:latest
 ```
 
-##########################################################
+---
 # Page 138 - Docker Swarm Lab - Init your swarm
 # Page 139 -141 - Docker Swarm - Deploy a stack
 # Page 142,143 - Docker Swarm - Creating services
@@ -278,7 +278,7 @@ docker service scale web=10
 docker service ps web
 ```
 
-##########################################################
+---
 # Page 196 - Installing Openshift Origin
 ```
 cat /etc/hosts | grep docker
@@ -315,7 +315,7 @@ iptables -I INPUT 1  -p tcp --dport 443 -j ACCEPT
 iptables -I INPUT 1  -p tcp --dport 80 -j ACCEPT
 ```
 
-##########################################################
+---
 # Page 198 - Installing OpenShift – oc cluster up
 ```
 oc cluster up --public-hostname=<IP-ADDRESS-ANDA>
@@ -324,7 +324,7 @@ oc login -u system:admin
 oadm policy add-cluster-role-to-user cluster-admin admin
 ```
 
-##########################################################
+---
 # Page 203 - Creating project
 # Page 204,205,208 - Origin 1st App Deployment
 ```
@@ -338,14 +338,14 @@ curl <IP-POD-APP>:8080
 ```
 
 
-##########################################################
+---
 # Page 210 - Origin 2nd App Deployment
 ```
 oc new-app https://github.com/openshift/ruby-hello-world -o yaml > myapp.yaml
 cat myapp.yaml 
 ```
 
-##########################################################
+---
 ```
 git clone https://github.com/openshift-evangelists/oc-cluster-wrapper
 echo 'PATH=$HOME/oc-cluster-wrapper:$PATH' >> $HOME/.bash_profile
@@ -361,7 +361,7 @@ oc cluster up --version v3.6.0 --image openshift/origin --public-hostname 192.16
 ```
 
 
-##########################################################
+---
 ```
 yum install -y ansible pyOpenSSL python-cryptography python-lxml
 git clone https://github.com/isnuryusuf/installcentos.git
