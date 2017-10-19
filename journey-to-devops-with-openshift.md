@@ -168,7 +168,7 @@ wget http://172.17.0.2/
 ---
 # Page 91 - Lab: Image creation from a container
 ```
-docker run -ti ubuntu docker-registry:5000/bash
+docker run -ti  docker-registry:5000/ubuntu bash
 apt-get update -y ; apt-get install figlet
 exit
 
