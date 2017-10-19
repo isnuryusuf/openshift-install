@@ -215,7 +215,7 @@ EXPOSE 80
 
 ```
 docker build -t nginx_yusuf .
-docker run --name my_first_nginx_instance -i -t
+docker run --name my_first_nginx_instance -i -t nginx_yusuf bash
 cat /tmp/test
 ```
 ---
