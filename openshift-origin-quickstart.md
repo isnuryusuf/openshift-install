@@ -390,9 +390,14 @@ New password:
 Re-type new password: 
 Adding password for user admin
 
+for Okd 3.11
+htpasswd -c  openshift.local.clusterup/users.htpasswd yusuf
+htpasswd -m  openshift.local.clusterup/users.htpasswd admin
+
 ```
 
 Edit file `/var/lib/origin/openshift.local.config/master/master-config.yaml` and find:
+for Okd 3.11 `openshift.local.clusterup/openshift-controller-manager/master-config.yaml` and find:
 ```
   identityProviders:
   - challenge: true
@@ -420,6 +425,10 @@ After change we must restart openshift
 ```
 oc cluster down
 oc cluster up --host-data-dir=/root/cluster1 --public-hostname=demo.i3-cloud.com --routing-suffix=demo.i3-cloud.com --use-existing-config
+
+for okd 3.11
+oc cluster down
+oc cluster up --public-hostname=devsecops-cicd.cloud.vmx.id --routing-suffix=cloud.vmx.id
 ```
 
 Adding user yusuf as cluster-admin
