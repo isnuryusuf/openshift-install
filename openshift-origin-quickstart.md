@@ -85,6 +85,8 @@ yum install origin-clients
 oc cluster up
 or
 oc cluster up --metrics
+or
+oc cluster up --public-hostname=devsecops-cicd.cloud.vmx.id --routing-suffix=cloud.vmx.id
 ```
 Example Output:
 ```
