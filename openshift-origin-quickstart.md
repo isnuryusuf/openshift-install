@@ -36,6 +36,19 @@ Edit `/etc/sysconfig/docker` file and add --insecure-registry 172.30.0.0/16 to t
   systemctl start docker
 ```
 
+Configure the Docker daemon with an insecure registry parameter of 172.30.0.0/16
+In RHEL and Fedora, edit the /etc/containers/registries.conf file and add the following lines:
+
+```
+[registries.insecure]
+registries = ['172.30.0.0/16']
+
+ systemctl daemon-reload
+ systemctl restart docker
+```
+
+
+
 ---
 # Setup
 ---
