@@ -47,6 +47,23 @@ registries = ['172.30.0.0/16']
  systemctl restart docker
 ```
 
+Determine the Docker bridge network container subnet:
+```
+docker network inspect -f "{{range .IPAM.Config }}{{ .Subnet }}{{end}}" bridge
+```
+You should get a subnet like: 172.17.0.0/16
+
+Create a new firewalld zone for the subnet and grant it access to the API and DNS ports:
+```
+firewall-cmd --permanent --new-zone dockerc
+firewall-cmd --permanent --zone dockerc --add-source 172.17.0.0/16
+firewall-cmd --permanent --zone dockerc --add-port 8443/tcp
+firewall-cmd --permanent --zone dockerc --add-port 53/udp
+firewall-cmd --permanent --zone dockerc --add-port 8053/udp
+firewall-cmd --reload
+```
+
+
 
 
 ---
@@ -66,6 +83,8 @@ Note1: This section is still being worked on.
 yum install centos-release-openshift-origin
 yum install origin-clients
 oc cluster up
+or
+oc cluster up --metrics
 ```
 Example Output:
 ```
