@@ -397,7 +397,7 @@ htpasswd -m  openshift.local.clusterup/users.htpasswd admin
 ```
 
 Edit file `/var/lib/origin/openshift.local.config/master/master-config.yaml` and find:
-for Okd 3.11 `openshift.local.clusterup/openshift-controller-manager/master-config.yaml` and find:
+for Okd 3.11 `/root/openshift.local.clusterup/openshift-controller-manager/master-config.yaml` and find:
 ```
   identityProviders:
   - challenge: true
@@ -428,6 +428,8 @@ oc cluster up --host-data-dir=/root/cluster1 --public-hostname=demo.i3-cloud.com
 
 for okd 3.11
 oc cluster down
+mkdir /etc/origin/master
+cp /root/openshift.local.clusterup/openshift-controller-manager/master-config.yaml /etc/origin/master/
 oc cluster up --public-hostname=devsecops-cicd.cloud.vmx.id --routing-suffix=cloud.vmx.id
 ```
 
